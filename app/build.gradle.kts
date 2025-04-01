@@ -53,6 +53,11 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
 
+    // expo player
+    implementation("androidx.media3:media3-exoplayer:1.6.0")
+    implementation("androidx.media3:media3-ui:1.6.0") // UI controls (optional)
+
+
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)

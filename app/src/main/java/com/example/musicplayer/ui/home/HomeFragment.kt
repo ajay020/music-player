@@ -1,6 +1,7 @@
 package com.example.musicplayer.ui.home
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayer.R
 import com.example.musicplayer.adapter.SongAdapter
+import com.example.musicplayer.ui.player.PlayerActivity
 import com.example.musicplayer.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -53,10 +55,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         adapter = SongAdapter { song ->
-            Toast.makeText(requireContext(), "Playing: ${song.title}", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), PlayerActivity::class.java)
+            intent.putExtra("SONG_PATH", song.path)
+            intent.putExtra("SONG_TITLE", song.title)
+            intent.putExtra("SONG_ARTIST", song.artist)
+
+            startActivity(intent)
         }
         recyclerView.adapter = adapter
-
         viewModel.songs.observe(viewLifecycleOwner) { songs ->
             adapter.submitList(songs)
         }

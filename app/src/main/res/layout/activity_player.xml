@@ -34,19 +34,14 @@
         android:textStyle="bold"
         android:layout_marginTop="8dp"/>
 
-    <!-- SeekBar -->
-    <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"/>
-
     <!-- Time Labels -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_margin="16dp"
+        android:paddingHorizontal="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp"
         android:gravity="center">
 
         <TextView
@@ -69,6 +64,14 @@
             />
     </LinearLayout>
 
+    <!-- SeekBar -->
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_marginTop="4dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
 
     <!-- Playback Controls -->
     <LinearLayout
@@ -80,24 +83,24 @@
 
         <ImageButton
             android:id="@+id/btnPrev"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="92dp"
+            android:layout_height="92dp"
             android:src="@drawable/ic_prev"
             android:background="?attr/selectableItemBackground"
             android:contentDescription="Previous"/>
 
         <ImageButton
             android:id="@+id/btnPlayPause"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="92dp"
+            android:layout_height="92dp"
             android:src="@drawable/ic_pause"
             android:background="?attr/selectableItemBackground"
             android:contentDescription="Play/Pause"/>
 
         <ImageButton
             android:id="@+id/btnNext"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="92dp"
+            android:layout_height="92dp"
             android:src="@drawable/ic_next"
             android:background="?attr/selectableItemBackground"
             android:contentDescription="Next"/>

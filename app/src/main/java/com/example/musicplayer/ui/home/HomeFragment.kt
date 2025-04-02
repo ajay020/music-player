@@ -43,30 +43,30 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
 
         // Request READ_MEDIA_AUDIO permission
-        if (ContextCompat.checkSelfPermission(requireContext(),
-                Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED
-            ) {
-            requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_AUDIO)
-        } else {
-            viewModel.loadSongs()
-        }
+//        if (ContextCompat.checkSelfPermission(requireContext(),
+//                Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED
+//            ) {
+//            requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_AUDIO)
+//        } else {
+//            viewModel.loadSongs()
+//        }
+//
+//        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewSongs)
+//        recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewSongs)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+//        adapter = SongAdapter { song ->
+//            val intent = Intent(requireContext(), PlayerActivity::class.java)
+//            intent.putExtra("SONG_PATH", song.path)
+//            intent.putExtra("SONG_TITLE", song.title)
+//            intent.putExtra("SONG_ARTIST", song.artist)
+//
+//            startActivity(intent)
+//        }
+//        recyclerView.adapter = adapter
+//        viewModel.songs.observe(viewLifecycleOwner) { songs ->
+//            adapter.submitList(songs)
+//        }
 
-        adapter = SongAdapter { song ->
-            val intent = Intent(requireContext(), PlayerActivity::class.java)
-            intent.putExtra("SONG_PATH", song.path)
-            intent.putExtra("SONG_TITLE", song.title)
-            intent.putExtra("SONG_ARTIST", song.artist)
-
-            startActivity(intent)
-        }
-        recyclerView.adapter = adapter
-        viewModel.songs.observe(viewLifecycleOwner) { songs ->
-            adapter.submitList(songs)
-        }
-
-        viewModel.loadSongs() // Fetch songs from MediaStore
+//        viewModel.loadSongs() // Fetch songs from MediaStore
     }
 }

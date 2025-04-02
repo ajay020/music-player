@@ -12,17 +12,19 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
-    private val repository: SongRepository
+class SongsViewModel @Inject constructor(
+    private val songRepository: SongRepository
 ) : ViewModel() {
 
     private val _songs = MutableLiveData<List<Song>>()
     val songs: LiveData<List<Song>> = _songs
 
+    // Load all songs
     fun loadSongs() {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            val songList = repository.getSongs()
-//            _songs.postValue(songList)
-//        }
+        viewModelScope.launch {
+            val loadedSongs = songRepository.loadSongs()
+            _songs.value = loadedSongs
+        }
     }
+
 }

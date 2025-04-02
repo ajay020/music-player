@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayer.R
 import com.example.musicplayer.data.model.Song
 import com.example.musicplayer.databinding.ItemSongBinding
+import com.example.musicplayer.utils.Helper
 import java.util.concurrent.TimeUnit
 
 class SongAdapter(
@@ -22,6 +24,7 @@ class SongAdapter(
         val titleTextView: TextView = itemView.findViewById(R.id.song_title)
         val artistTextView: TextView = itemView.findViewById(R.id.song_artist)
         val durationTextView: TextView = itemView.findViewById(R.id.song_duration)
+        val albumArtImageView: ImageView = itemView.findViewById(R.id.song_art)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
@@ -33,11 +36,16 @@ class SongAdapter(
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val song = songs[position]
 
-        Log.d("song", "song: $song")
-
         holder.titleTextView.text = song.title
         holder.artistTextView.text = song.artist
         holder.durationTextView.text = formatDuration(song.duration)
+
+        val bitmap = Helper.getAlbumArt( song.uri, holder.itemView.context,)
+        if (bitmap != null) {
+            holder.albumArtImageView.setImageBitmap(bitmap)
+        }else {
+            holder.albumArtImageView.setImageResource(R.drawable.ic_music_placeholder)
+        }
 
         holder.itemView.setOnClickListener {
             onSongClick(song)

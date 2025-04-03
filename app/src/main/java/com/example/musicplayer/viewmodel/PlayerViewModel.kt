@@ -57,5 +57,4 @@ class PlayerViewModel @Inject constructor(
             else -> emptyList()
         }
     }
-
 }

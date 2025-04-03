@@ -6,6 +6,7 @@ import android.content.Context
 import android.provider.MediaStore
 import android.util.Log
 import com.example.musicplayer.data.model.Song
+import com.example.musicplayer.utils.Helper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -59,15 +60,12 @@ class SongRepository @Inject constructor(
                     val id = cursor.getLong(idColumn)
                     val title = cursor.getString(titleColumn)
                     val artist = cursor.getString(artistColumn)
-                    val album = cursor.getString(albumColumn)
+                    val albumName = cursor.getString(albumColumn)
                     val albumId = cursor.getLong(albumIdColumn).toString()
                     val duration = cursor.getLong(durationColumn)
                     val path = cursor.getString(pathColumn)
 
-                    val contentUri = ContentUris.withAppendedId(
-                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                        id
-                    )
+                    val contentUri = Helper.getAlbumArtUri(albumId.toLong())
 
                     val song = Song(
                         id = id,
@@ -78,17 +76,15 @@ class SongRepository @Inject constructor(
                         duration = duration,
                         path = path
                     )
-                    allSongs.add(song)
 
+                    allSongs.add(song)
                     // Organize songs by album
-                    val albumSongs =
-                        albumSongsMap.getOrDefault(albumId, emptyList()).toMutableList()
+                    val albumSongs = albumSongsMap.getOrDefault(albumId, emptyList()).toMutableList()
                     albumSongs.add(song)
                     albumSongsMap[albumId] = albumSongs
 
                     // Organize songs by artist
-                    val artistSongs =
-                        artistSongsMap.getOrDefault(artist, emptyList()).toMutableList()
+                    val artistSongs = artistSongsMap.getOrDefault(artist, emptyList()).toMutableList()
                     artistSongs.add(song)
                     artistSongsMap[artist] = artistSongs
                 }

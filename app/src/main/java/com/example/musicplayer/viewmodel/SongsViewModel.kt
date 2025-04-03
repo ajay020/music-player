@@ -26,5 +26,4 @@ class SongsViewModel @Inject constructor(
             _songs.value = loadedSongs
         }
     }
-
 }

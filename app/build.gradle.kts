@@ -57,6 +57,9 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.6.0")
     implementation("androidx.media3:media3-ui:1.6.0") // UI controls (optional)
 
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    kapt ("com.github.bumptech.glide:compiler:4.16.0")
+
 
     // Hilt
     implementation(libs.hilt.android)

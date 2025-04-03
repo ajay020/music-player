@@ -46,18 +46,22 @@ class SongsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view  =  inflater.inflate(R.layout.fragment_songs, container, false)
+        val view = inflater.inflate(R.layout.fragment_songs, container, false)
         recyclerView = view.findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        songAdapter = SongAdapter(songsList, {
-            playSong(it)
-        })
+        songAdapter = SongAdapter(
+            songs = songsList,
+            onSongClick = {
+                playSong(it)
+            })
         recyclerView.adapter = songAdapter
 
         // Request READ_MEDIA_AUDIO permission
-        if (ContextCompat.checkSelfPermission(requireContext(),
-                Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_MEDIA_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_AUDIO)
         } else {
@@ -76,8 +80,8 @@ class SongsFragment : Fragment() {
     private fun playSong(song: Song) {
         // Start the PlayerActivity
         val intent = Intent(requireContext(), PlayerActivity::class.java).apply {
-          putExtra("playlistType", "SONGS")
-          putExtra("currentSongId", song.id)
+            putExtra("playlistType", "SONGS")
+            putExtra("currentSongId", song.id)
         }
 
         startActivity(intent)

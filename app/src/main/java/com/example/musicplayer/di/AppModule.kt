@@ -1,5 +1,6 @@
 package com.example.musicplayer.di
 
+import android.app.Application
 import android.content.Context
 import com.example.musicplayer.data.repository.AlbumRepository
 import com.example.musicplayer.data.repository.SongRepository
@@ -25,6 +26,7 @@ object AppModule {
     fun provideContext(@ApplicationContext context: Context): Context {
         return context
     }
+
 
     @Provides
     @Singleton

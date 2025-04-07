@@ -45,8 +45,8 @@ class AlbumSongsActivity : AppCompatActivity() {
             songList,
             albumCoverUri,
             albumName,
-            onSongClick = {
-                playSong(it)
+            onSongClick = { song, index ->
+//                playSong(it)
             },
         )
         recyclerView.adapter = songAdapter

@@ -20,7 +20,7 @@ class SongAdapter(
     private val songs: List<Song>,
     private val albumCoverUri: String = "",
     private val albumName: String = "",
-    private val onSongClick: (Song) -> Unit
+    private val onSongClick: (Song, Int) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -50,7 +50,7 @@ class SongAdapter(
         if (holder is AlbumHeaderViewHolder) {
             holder.bind(albumCoverUri)
         } else if (holder is SongViewHolder) {
-            holder.bind(song, onSongClick)
+            holder.bind(song, position, onSongClick)
         }
     }
 
@@ -72,9 +72,9 @@ class SongAdapter(
         val durationTextView: TextView = itemView.findViewById(R.id.song_duration)
         val albumArtImageView: ImageView = itemView.findViewById(R.id.song_art)
 
-        fun bind(song: Song, onClick: (Song) -> Unit) {
+        fun bind(song: Song, index: Int,  onClick: (Song, Int) -> Unit) {
             titleTextView.text = song.title
-            itemView.setOnClickListener { onClick(song) }
+            itemView.setOnClickListener { onClick(song, index) }
             artistTextView.text = song.artist
             durationTextView.text = Helper.formatDuration(song.duration)
             setImageView(albumArtImageView, song.uri.toString())

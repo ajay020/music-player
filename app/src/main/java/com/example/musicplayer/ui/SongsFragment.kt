@@ -1,7 +1,6 @@
 package com.example.musicplayer.ui
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -14,19 +13,18 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayer.R
 import com.example.musicplayer.adapter.SongAdapter
 import com.example.musicplayer.data.model.Song
-import com.example.musicplayer.ui.player.PlayerActivity
-import com.example.musicplayer.viewmodel.SongsViewModel
+import com.example.musicplayer.viewmodel.MusicViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SongsFragment : Fragment() {
-    private val viewModel: SongsViewModel by activityViewModels()
+    private val musicViewModel: MusicViewModel by activityViewModels()
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var songAdapter: SongAdapter
     private var songsList = mutableListOf<Song>()
@@ -34,7 +32,7 @@ class SongsFragment : Fragment() {
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                viewModel.loadSongs()
+                musicViewModel.loadSongs("SONGS")
             } else {
                 Log.e("song fragment", "Permission Denied")
             }
@@ -52,8 +50,8 @@ class SongsFragment : Fragment() {
 
         songAdapter = SongAdapter(
             songs = songsList,
-            onSongClick = {
-                playSong(it)
+            onSongClick = { song, index  ->
+                playSong(song, index)
             })
         recyclerView.adapter = songAdapter
 
@@ -65,10 +63,10 @@ class SongsFragment : Fragment() {
         ) {
             requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_AUDIO)
         } else {
-            viewModel.loadSongs()
+            musicViewModel.loadSongs("SONGS")
         }
 
-        viewModel.songs.observe(viewLifecycleOwner) { songs ->
+        musicViewModel.songs.observe(viewLifecycleOwner) { songs ->
             songsList.clear()  // Clear the old list before adding new songs
             songsList.addAll(songs)
             songAdapter.notifyDataSetChanged() // Notify adapter about the new data
@@ -77,13 +75,7 @@ class SongsFragment : Fragment() {
         return view
     }
 
-    private fun playSong(song: Song) {
-        // Start the PlayerActivity
-        val intent = Intent(requireContext(), PlayerActivity::class.java).apply {
-            putExtra("playlistType", "SONGS")
-            putExtra("currentSongId", song.id)
-        }
-
-        startActivity(intent)
+    private fun playSong(song: Song, index: Int) {
+        musicViewModel.playSong(song, index)
     }
 }

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -14,9 +15,9 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+        app:menu="@menu/top_app_bar_menu"
         app:title="My Music"
-        app:titleTextColor="@android:color/white"
-        app:menu="@menu/top_app_bar_menu"/>
+        app:titleTextColor="@android:color/white" />
 
     <!-- TabLayout for Categories -->
     <com.google.android.material.tabs.TabLayout
@@ -31,5 +32,12 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
+    <!-- Mini Player Layout -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/mini_player_fragment"
+        android:name="com.example.musicplayer.ui.MiniPlayerFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible" />
 </LinearLayout>

@@ -12,7 +12,6 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
 class SongRepository @Inject constructor(
     private val context: Context
 ) {
@@ -79,12 +78,14 @@ class SongRepository @Inject constructor(
 
                     allSongs.add(song)
                     // Organize songs by album
-                    val albumSongs = albumSongsMap.getOrDefault(albumId, emptyList()).toMutableList()
+                    val albumSongs =
+                        albumSongsMap.getOrDefault(albumId, emptyList()).toMutableList()
                     albumSongs.add(song)
                     albumSongsMap[albumId] = albumSongs
 
                     // Organize songs by artist
-                    val artistSongs = artistSongsMap.getOrDefault(artist, emptyList()).toMutableList()
+                    val artistSongs =
+                        artistSongsMap.getOrDefault(artist, emptyList()).toMutableList()
                     artistSongs.add(song)
                     artistSongsMap[artist] = artistSongs
                 }
@@ -95,44 +96,35 @@ class SongRepository @Inject constructor(
     }
 
     // Get all songs
-    fun getAllSongs(): List<Song> = allSongs
+    suspend fun getAllSongs(): List<Song> {
+        loadSongs()
+        return allSongs
+    }
 
     // Get songs by album ID
-    fun getSongsByAlbum(albumId: String): List<Song> = albumSongsMap[albumId] ?: emptyList()
+    suspend fun getSongsByAlbum(albumId: String): List<Song> {
+        loadSongs()
+        return albumSongsMap[albumId] ?: emptyList()
+    }
 
     // Get songs by artist name
-    fun getSongsByArtist(artistName: String): List<Song> = artistSongsMap[artistName] ?: emptyList()
+    suspend fun getSongsByArtist(artistName: String): List<Song> {
+        loadSongs()
+        return artistSongsMap[artistName] ?: emptyList()
+    }
 
     // Get songs by playlist ID (would connect to a database or content provider for playlists)
-    fun getSongsByPlaylist(playlistId: String): List<Song> =
-        playlistSongsMap[playlistId] ?: emptyList()
-
-    // Get the next song in a playlist
-    fun getNextSong(currentSong: Song, playlistType: String, playlistId: String? = null): Song? {
-        val playlist = when (playlistType) {
-            "SONGS" -> allSongs
-            "ALBUM" -> albumSongsMap[playlistId] ?: emptyList()
-            "ARTIST" -> artistSongsMap[playlistId] ?: emptyList()
-            "PLAYLIST" -> playlistSongsMap[playlistId] ?: emptyList()
-            else -> emptyList()
-        }
-
-        if (playlist.isEmpty()) return null
-
-        val currentIndex = playlist.indexOfFirst { it.id == currentSong.id }
-        if (currentIndex == -1) return null
-
-        // Get next song with wrap-around
-        val nextIndex = (currentIndex + 1) % playlist.size
-        return playlist[nextIndex]
+    suspend fun getSongsByPlaylist(playlistId: String): List<Song> {
+        loadSongs()
+        return playlistSongsMap[playlistId] ?: emptyList()
     }
 
-    // Get the previous song in a playlist
-    fun getPreviousSong(
-        currentSong: Song,
+    // Get songs by a specific playlist
+    suspend fun getSongsBy(
         playlistType: String,
         playlistId: String? = null
-    ): Song? {
+    ): List<Song> {
+        loadSongs()
         val playlist = when (playlistType) {
             "SONGS" -> allSongs
             "ALBUM" -> albumSongsMap[playlistId] ?: emptyList()
@@ -140,14 +132,7 @@ class SongRepository @Inject constructor(
             "PLAYLIST" -> playlistSongsMap[playlistId] ?: emptyList()
             else -> emptyList()
         }
-
-        if (playlist.isEmpty()) return null
-
-        val currentIndex = playlist.indexOfFirst { it.id == currentSong.id }
-        if (currentIndex == -1) return null
-
-        // Get previous song with wrap-around
-        val previousIndex = if (currentIndex > 0) currentIndex - 1 else playlist.size - 1
-        return playlist[previousIndex]
+        return playlist
     }
+
 }

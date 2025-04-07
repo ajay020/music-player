@@ -12,18 +12,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.example.musicplayer.R
 import com.example.musicplayer.data.model.Song
+import com.example.musicplayer.ui.player.FullPlayerActivity
 import com.example.musicplayer.utils.Helper
 import com.example.musicplayer.viewmodel.MusicViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MiniPlayerFragment : Fragment(R.layout.fragment_mini_player) {
+    private lateinit var miniPlayer: ConstraintLayout
     private lateinit var miniSongTitle: TextView
     private lateinit var miniArtistName: TextView
     private lateinit var miniAlbumArt: ImageView
@@ -33,22 +37,12 @@ class MiniPlayerFragment : Fragment(R.layout.fragment_mini_player) {
 
     private val musicViewModel: MusicViewModel by activityViewModels()
 
-    private val songReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val song = intent?.getParcelableExtra<Song>("SONG")
-            val isPlaying = intent?.getBooleanExtra("IS_PLAYING", false) ?: false
-
-            song?.let {
-                updateMiniPlayer(it)
-                updatePlayPauseButton(isPlaying)
-            }
-        }
-    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        miniPlayer = view.findViewById(R.id.mini_player)
         miniSongTitle = view.findViewById(R.id.mini_song_title)
         miniArtistName = view.findViewById(R.id.mini_artist_name)
         miniAlbumArt = view.findViewById(R.id.mini_album_art)
@@ -56,26 +50,34 @@ class MiniPlayerFragment : Fragment(R.layout.fragment_mini_player) {
         miniButtonPrev = view.findViewById(R.id.mini_btn_prev)
         miniButtonNext = view.findViewById(R.id.mini_btn_next)
 
-        miniButtonPlayPause.setOnClickListener { musicViewModel.togglePlayPause() }
+        miniPlayer.setOnClickListener {
+            val intent = Intent(requireContext(), FullPlayerActivity::class.java)
+            startActivity(intent)
+        }
+        miniButtonPlayPause.setOnClickListener {
+            musicViewModel.togglePlayPause()
+        }
         miniButtonPrev.setOnClickListener { musicViewModel.previous() }
         miniButtonNext.setOnClickListener { musicViewModel.next() }
 
-        ContextCompat.registerReceiver(
-            requireContext(),
-            songReceiver,
-            IntentFilter("ACTION_SONG_CHANGED"),
-            ContextCompat.RECEIVER_NOT_EXPORTED
-        )
+        musicViewModel.currentSong.observe(viewLifecycleOwner) { song ->
+            if (song != null) {
+                updateMiniPlayer(song)
+            }
+        }
+
+        musicViewModel.isPlaying.observe(viewLifecycleOwner) { isPlaying ->
+            updatePlayPauseButton(isPlaying)
+        }
+
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        requireContext().unregisterReceiver(songReceiver)
-    }
 
     private fun updateMiniPlayer(song: Song) {
         miniSongTitle.text = song.title
         miniArtistName.text = song.artist
+
+
 
         val albumArt = Helper.getAlbumArt(song.uri, requireContext())
         if (albumArt != null) {

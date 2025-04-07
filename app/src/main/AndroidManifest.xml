@@ -30,7 +30,7 @@
             android:name=".ui.AlbumSongsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.player.PlayerActivity"
+            android:name=".ui.player.FullPlayerActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

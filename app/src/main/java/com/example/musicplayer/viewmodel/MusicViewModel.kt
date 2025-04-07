@@ -1,8 +1,12 @@
 package com.example.musicplayer.viewmodel
 
 import android.app.Application
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,13 +26,56 @@ class MusicViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val songRepository: SongRepository
 ) : ViewModel() {
-    private val _currentSong = MutableLiveData<Song>()
-    val currentSong: LiveData<Song> = _currentSong
+    private val _currentSong = MutableLiveData<Song?>()
+    val currentSong: LiveData<Song?> = _currentSong
 
     private val _songs = MutableLiveData<List<Song>>()
     val songs: LiveData<List<Song>> = _songs
 
+    private val _isPlaying = MutableLiveData<Boolean>()
+    val isPlaying: LiveData<Boolean> get() = _isPlaying
+
+    private val _currentPosition = MutableLiveData<Int>()
+    val currentPosition: LiveData<Int> get() = _currentPosition
+
+    private val _duration = MutableLiveData<Int>()
+    val duration: LiveData<Int> get() = _duration
+
     private val serviceIntent = Intent(context, MusicService::class.java)
+
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            intent?.let {
+                val isPlaying = it.getBooleanExtra("IS_PLAYING", false)
+                val currentPosition = it.getLongExtra("CURRENT_POSITION", 0)
+                val duration = it.getLongExtra("DURATION", 0)
+                val song = it.getParcelableExtra<Song>("SONG")
+                Log.d(
+                    "MusicViewModel",
+                    "Received: isPlaying=$isPlaying, position=$currentPosition, duration=$duration, song=$song"
+                )
+                _isPlaying.postValue(isPlaying)
+                _currentPosition.postValue(currentPosition.toInt())
+                _duration.postValue(duration.toInt())
+                _currentSong.postValue(song)
+            }
+        }
+    }
+
+    init {
+        val filter = IntentFilter("PLAYER_STATE")
+        ContextCompat.registerReceiver(
+            context,
+            receiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        context.unregisterReceiver(receiver)
+    }
 
     fun loadSongs(playlistType: String, playlistId: String? = null) {
         viewModelScope.launch {
@@ -46,6 +93,7 @@ class MusicViewModel @Inject constructor(
     fun next() {
         serviceIntent.action = "ACTION_NEXT"
         context.startService(serviceIntent)
+
     }
 
     fun previous() {
@@ -55,6 +103,12 @@ class MusicViewModel @Inject constructor(
 
     fun togglePlayPause() {
         serviceIntent.action = "TOGGLE_PLAY_PAUSE"
+        context.startService(serviceIntent)
+    }
+
+    fun seekTo(position: Int) {
+        serviceIntent.action = "ACTION_SEEK_TO"
+        serviceIntent.putExtra("seekTo", position)
         context.startService(serviceIntent)
     }
 

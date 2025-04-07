@@ -76,7 +76,7 @@ class SongAdapter(
             titleTextView.text = song.title
             itemView.setOnClickListener { onClick(song, index) }
             artistTextView.text = song.artist
-            durationTextView.text = Helper.formatDuration(song.duration)
+            durationTextView.text = Helper.formatTime(song.duration)
             setImageView(albumArtImageView, song.uri.toString())
         }
     }

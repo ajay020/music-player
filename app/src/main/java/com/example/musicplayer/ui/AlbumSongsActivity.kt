@@ -2,25 +2,16 @@ package com.example.musicplayer.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.musicplayer.R
 import com.example.musicplayer.adapter.SongAdapter
 import com.example.musicplayer.data.model.Song
-import com.example.musicplayer.ui.player.PlayerActivity
+import com.example.musicplayer.ui.player.FullPlayerActivity
 import com.example.musicplayer.viewmodel.AlbumViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AlbumSongsActivity : AppCompatActivity() {
@@ -71,7 +62,7 @@ class AlbumSongsActivity : AppCompatActivity() {
 //    }
 
     private fun playSong(song: Song) {
-        val intent = Intent(this, PlayerActivity::class.java).apply {
+        val intent = Intent(this, FullPlayerActivity::class.java).apply {
             putExtra("playlistType", "ALBUM")
             putExtra("playlistId", song.albumId)
             putExtra("currentSongId", song.id)

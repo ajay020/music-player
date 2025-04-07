@@ -10,7 +10,9 @@ import android.graphics.BitmapFactory
 import android.media.session.MediaSession
 import android.os.Binder
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -30,9 +32,33 @@ class MusicService : Service() {
     private val NOTIFICATION_ID = 1
     private val CHANNEL_ID = "MusicPlayerChannel"
 
+    private val handler = Handler(Looper.getMainLooper())
+    private val updateIntervalMillis: Long = 500 // Update every 200 milliseconds
+    private val updateRunnable = object : Runnable {
+        override fun run() {
+            SongManager.getCurrentSong()?.let {
+                broadcastCurrentState(it)
+            }
+            handler.postDelayed(this, updateIntervalMillis) // every second
+        }
+    }
+
+    private fun broadcastCurrentState(song: Song) {
+        val intent = Intent("PLAYER_STATE")
+        intent.putExtra("SONG", song)
+        intent.putExtra("IS_PLAYING", player.isPlaying)
+        intent.putExtra("CURRENT_POSITION", player.currentPosition)
+        intent.putExtra("DURATION", player.duration)
+
+        Log.d("MusicService", "Broadcasting: isPlaying=${player.isPlaying}, position=${player.currentPosition}, duration=${player.duration}")
+
+        sendBroadcast(intent)
+    }
+
 
     override fun onCreate() {
         super.onCreate()
+        handler.post(updateRunnable)
         createNotificationChannel()
         player = ExoPlayer.Builder(this).build()
 
@@ -40,7 +66,7 @@ class MusicService : Service() {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 SongManager.getCurrentSong()?.let { song ->
                     updateNotification(song)
-                    broadcastCurrentSong(song)
+                    broadcastCurrentState(song)
                 }
             }
         })
@@ -53,7 +79,7 @@ class MusicService : Service() {
             "ACTION_PLAY" -> {
                 SongManager.getCurrentSong()?.let { song ->
                     playSong(song)
-                    broadcastCurrentSong(song)
+                    broadcastCurrentState(song)
                 }
             }
 
@@ -61,7 +87,7 @@ class MusicService : Service() {
                 SongManager.getNextSong()?.let { song ->
                     playSong(song)
                     updateNotification(song)
-                    broadcastCurrentSong(song)
+                    broadcastCurrentState(song)
                 }
             }
 
@@ -69,12 +95,18 @@ class MusicService : Service() {
                 SongManager.getPreviousSong()?.let { song ->
                     playSong(song)
                     updateNotification(song)
-                    broadcastCurrentSong(song)
+                    broadcastCurrentState(song)
                 }
             }
 
             "TOGGLE_PLAY_PAUSE" -> {
                 resumeOrPause()
+            }
+
+            "ACTION_SEEK_TO" -> {
+                val position = intent.getIntExtra("seekTo", 0)
+                Log.d( "MusicService", "Seek to position: $position")
+                player.seekTo(position.toLong())
             }
         }
         return START_STICKY
@@ -101,16 +133,8 @@ class MusicService : Service() {
 
         SongManager.getCurrentSong()?.let { song ->
             updateNotification(song)
-            broadcastCurrentSong(song)
+            broadcastCurrentState(song)
         }
-    }
-
-    private fun broadcastCurrentSong(song: Song) {
-        val intent = Intent("ACTION_SONG_CHANGED")
-        intent.putExtra("SONG", song)
-        intent.putExtra("IS_PLAYING", player.isPlaying)
-
-        sendBroadcast(intent)
     }
 
     private fun startForegroundService(song: Song) {

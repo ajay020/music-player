@@ -21,7 +21,8 @@ class SongAdapter(
     private val albumName: String = "",
     private val onSongClick: (Song, Int) -> Unit,
     private val onBackButtonClick: () -> Unit = {},
-    private val onSearchButtonClick: () -> Unit = {}
+    private val onSearchButtonClick: () -> Unit = {},
+    private val onMoreOptionsClick: (Song) -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -39,8 +40,8 @@ class SongAdapter(
                 .inflate(R.layout.item_album_header, parent, false)
             AlbumHeaderViewHolder(view)
         } else {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_song, parent, false)
+            val view =
+                LayoutInflater.from(parent.context).inflate(R.layout.item_song, parent, false)
             SongViewHolder(view)
         }
     }
@@ -83,6 +84,7 @@ class SongAdapter(
         val artistTextView: TextView = itemView.findViewById(R.id.song_artist)
         val durationTextView: TextView = itemView.findViewById(R.id.song_duration)
         val albumArtImageView: ImageView = itemView.findViewById(R.id.song_art)
+        val moreOptionsImageView: ImageView = itemView.findViewById(R.id.more_options)
 
         fun bind(song: Song, index: Int, onClick: (Song, Int) -> Unit) {
             titleTextView.text = song.title
@@ -90,6 +92,10 @@ class SongAdapter(
             artistTextView.text = song.artist
             durationTextView.text = Helper.formatTime(song.duration)
             setImageView(albumArtImageView, song.uri.toString())
+
+            moreOptionsImageView.setOnClickListener {
+                onMoreOptionsClick(song) // Call the new callback
+            }
         }
     }
 

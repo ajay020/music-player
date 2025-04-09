@@ -4,23 +4,24 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.musicplayer.R
 import com.example.musicplayer.data.model.Song
-import com.example.musicplayer.databinding.ItemSongBinding
 import com.example.musicplayer.utils.Helper
-import java.util.concurrent.TimeUnit
 
 class SongAdapter(
     private val songs: List<Song>,
     private val albumCoverUri: String = "",
     private val albumName: String = "",
-    private val onSongClick: (Song, Int) -> Unit
+    private val onSongClick: (Song, Int) -> Unit,
+    private val onBackButtonClick: () -> Unit = {},
+    private val onSearchButtonClick: () -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -49,6 +50,7 @@ class SongAdapter(
 
         if (holder is AlbumHeaderViewHolder) {
             holder.bind(albumCoverUri)
+
         } else if (holder is SongViewHolder) {
             holder.bind(song, position, onSongClick)
         }
@@ -58,10 +60,20 @@ class SongAdapter(
     inner class AlbumHeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val albumCover: ImageView = itemView.findViewById(R.id.album_cover)
         private val albumTitle: TextView = itemView.findViewById(R.id.tv_album_title)
+        private val backButton: ImageButton = itemView.findViewById(R.id.back_button)
+        private val searchButton: ImageButton = itemView.findViewById(R.id.btn_search)
 
         fun bind(albumCoverUri: String) {
             setImageView(albumCover, albumCoverUri)
             albumTitle.text = albumName
+
+            backButton.setOnClickListener {
+                onBackButtonClick() // Call the callback
+            }
+
+            searchButton.setOnClickListener {
+                onSearchButtonClick() // Call the search callback
+            }
         }
     }
 
@@ -72,7 +84,7 @@ class SongAdapter(
         val durationTextView: TextView = itemView.findViewById(R.id.song_duration)
         val albumArtImageView: ImageView = itemView.findViewById(R.id.song_art)
 
-        fun bind(song: Song, index: Int,  onClick: (Song, Int) -> Unit) {
+        fun bind(song: Song, index: Int, onClick: (Song, Int) -> Unit) {
             titleTextView.text = song.title
             itemView.setOnClickListener { onClick(song, index) }
             artistTextView.text = song.artist

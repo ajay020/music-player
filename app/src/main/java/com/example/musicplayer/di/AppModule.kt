@@ -27,7 +27,6 @@ object AppModule {
         return context
     }
 
-
     @Provides
     @Singleton
     fun provideAlbumRepository(@ApplicationContext context: Context): AlbumRepository {

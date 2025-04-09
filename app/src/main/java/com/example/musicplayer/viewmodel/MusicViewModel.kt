@@ -79,7 +79,7 @@ class MusicViewModel @Inject constructor(
 
     fun loadSongs(playlistType: String, playlistId: String? = null) {
         viewModelScope.launch {
-            _songs.value = songRepository.getSongsBy(playlistType)
+            _songs.value = songRepository.getSongsBy(playlistType, playlistId)
         }
     }
 
@@ -111,5 +111,4 @@ class MusicViewModel @Inject constructor(
         serviceIntent.putExtra("seekTo", position)
         context.startService(serviceIntent)
     }
-
 }

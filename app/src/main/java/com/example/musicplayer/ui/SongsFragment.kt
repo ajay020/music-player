@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.musicplayer.MainActivity
 import com.example.musicplayer.R
 import com.example.musicplayer.adapter.SongAdapter
 import com.example.musicplayer.data.model.Song
@@ -50,8 +51,14 @@ class SongsFragment : Fragment() {
 
         songAdapter = SongAdapter(
             songs = songsList,
-            onSongClick = { song, index  ->
+            onSongClick = { song, index ->
                 playSong(song, index)
+            },
+            onBackButtonClick = { (view.context as? MainActivity)?.finish() },
+            onSearchButtonClick = {
+                // Implement your search functionality here
+                Log.d("AlbumSongsActivity", "Search button in header clicked")
+                // You might want to show a search bar or navigate to a search activity
             })
         recyclerView.adapter = songAdapter
 

@@ -1,9 +1,10 @@
 package com.example.musicplayer.di
 
-import android.app.Application
 import android.content.Context
+import com.example.musicplayer.data.database.PlaylistDao
 import com.example.musicplayer.data.repository.AlbumRepository
-import com.example.musicplayer.data.repository.SongRepository
+import com.example.musicplayer.data.repository.MusicRepository
+import com.example.musicplayer.data.repository.PlaylistRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,8 +18,17 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSongRepository(@ApplicationContext context: Context): SongRepository {
-        return SongRepository(context)
+    fun providePlaylistRepository(playlistDao: PlaylistDao): PlaylistRepository {
+        return PlaylistRepository(playlistDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSongRepository(
+        @ApplicationContext context: Context,
+        playlistRepository: PlaylistRepository
+    ): MusicRepository {
+        return MusicRepository(context, playlistRepository)
     }
 
     @Provides

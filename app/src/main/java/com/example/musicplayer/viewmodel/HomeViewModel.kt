@@ -3,17 +3,14 @@ package com.example.musicplayer.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.musicplayer.data.model.Song
-import com.example.musicplayer.data.repository.SongRepository
+import com.example.musicplayer.data.repository.MusicRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: SongRepository
+    private val repository: MusicRepository
 ) : ViewModel() {
 
     private val _songs = MutableLiveData<List<Song>>()

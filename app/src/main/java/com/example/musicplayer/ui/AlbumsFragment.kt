@@ -26,15 +26,17 @@ class AlbumsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view  =  inflater.inflate(R.layout.fragment_albums, container, false)
+        val view = inflater.inflate(R.layout.fragment_albums, container, false)
 
         recyclerView = view.findViewById(R.id.album_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        albumAdapter = AlbumAdapter(albumList ) { album ->
-            val intent = Intent(requireContext(), AlbumSongsActivity::class.java)
-            intent.putExtra("albumId", album.id)
-            intent.putExtra("albumName", album.name)
-            intent.putExtra("albumCoverUri", album.coverUri.toString())
+        albumAdapter = AlbumAdapter(albumList) { album ->
+            val intent = Intent(requireContext(), SongsDisplayActivity::class.java).apply {
+                putExtra("TYPE", "ALBUM")
+                putExtra("ALBUM_ID", album.id)
+                putExtra("ALBUM_NAME", album.name)
+            }
+
             startActivity(intent)
         }
         recyclerView.adapter = albumAdapter

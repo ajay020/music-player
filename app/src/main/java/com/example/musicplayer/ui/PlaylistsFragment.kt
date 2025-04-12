@@ -1,5 +1,6 @@
 package com.example.musicplayer.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -37,13 +38,14 @@ class PlaylistsFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         playlistAdapter = PlaylistAdapter(
             playlistList, { playlist ->
-                // Handle playlist item click (e.g., navigate to playlist songs)
-                Toast.makeText(requireContext(), "Clicked: ${playlist.name}", Toast.LENGTH_SHORT)
-                    .show()
+                val intent = Intent(requireContext(), SongsDisplayActivity::class.java).apply {
+                    putExtra("TYPE", "PLAYLIST")
+                    putExtra("PLAYLIST_ID", playlist.id)
+                    putExtra("PLAYLIST_NAME", playlist.name)
+                }
+                startActivity(intent)
             },
-            { playlist ->
-                showPlaylistOptionsDialog(playlist)
-            }
+            { playlist -> showPlaylistOptionsDialog(playlist) }
         )
         recyclerView.adapter = playlistAdapter
 

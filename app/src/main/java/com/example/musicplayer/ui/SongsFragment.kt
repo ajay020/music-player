@@ -40,7 +40,7 @@ class SongsFragment : Fragment() {
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                musicViewModel.loadSongs("SONGS")
+                musicViewModel.loadSongsBasedOnType("SONGS")
             } else {
                 Log.e("song fragment", "Permission Denied")
             }
@@ -86,7 +86,7 @@ class SongsFragment : Fragment() {
         ) {
             requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_AUDIO)
         } else {
-            musicViewModel.loadSongs("SONGS")
+            musicViewModel.loadSongsBasedOnType("SONGS")
         }
 
         musicViewModel.songs.observe(viewLifecycleOwner) { songs ->

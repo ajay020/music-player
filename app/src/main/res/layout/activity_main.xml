@@ -33,6 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
+
     <!-- Mini Player Layout -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/mini_player_fragment"

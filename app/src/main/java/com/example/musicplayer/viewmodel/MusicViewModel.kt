@@ -1,6 +1,5 @@
 package com.example.musicplayer.viewmodel
 
-import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -9,13 +8,13 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.musicplayer.data.SongManager
 import com.example.musicplayer.data.model.Song
-import com.example.musicplayer.data.repository.SongRepository
+import com.example.musicplayer.data.repository.MusicRepository
 import com.example.musicplayer.service.MusicService
-import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -24,8 +23,15 @@ import javax.inject.Inject
 @HiltViewModel
 class MusicViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val songRepository: SongRepository
+    private val musicRepository: MusicRepository,
+    val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val playlistId = savedStateHandle.get<Long>("PLAYLIST_ID")
+    private val artistId = savedStateHandle.get<Long>("ARTIST_ID")
+    private val albumId = savedStateHandle.get<Long>("ALBUM_ID")
+    private val type = savedStateHandle.get<String>("TYPE")
+
     private val _currentSong = MutableLiveData<Song?>()
     val currentSong: LiveData<Song?> = _currentSong
 
@@ -50,10 +56,7 @@ class MusicViewModel @Inject constructor(
                 val currentPosition = it.getLongExtra("CURRENT_POSITION", 0)
                 val duration = it.getLongExtra("DURATION", 0)
                 val song = it.getParcelableExtra<Song>("SONG")
-                Log.d(
-                    "MusicViewModel",
-                    "Received: isPlaying=$isPlaying, position=$currentPosition, duration=$duration, song=$song"
-                )
+
                 _isPlaying.postValue(isPlaying)
                 _currentPosition.postValue(currentPosition.toInt())
                 _duration.postValue(duration.toInt())
@@ -70,6 +73,19 @@ class MusicViewModel @Inject constructor(
             filter,
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
+
+        loadSongsBasedOnType()
+    }
+
+    private fun loadSongsBasedOnType() {
+        viewModelScope.launch {
+            when (type) {
+                "SONGS" -> musicRepository.getSongs("SONGS")
+                "PLAYLIST" -> playlistId?.let { loadSongsBasedOnType("PLAYLIST", it) }
+                "ARTIST" -> artistId?.let { loadSongsBasedOnType("ARTIST", it) }
+                "ALBUM" -> albumId?.let { loadSongsBasedOnType("ALBUM", it) }
+            }
+        }
     }
 
     override fun onCleared() {
@@ -77,9 +93,9 @@ class MusicViewModel @Inject constructor(
         context.unregisterReceiver(receiver)
     }
 
-    fun loadSongs(playlistType: String, playlistId: String? = null) {
+    fun loadSongsBasedOnType(playlistType: String, playlistId: Long? = null) {
         viewModelScope.launch {
-            _songs.value = songRepository.getSongsBy(playlistType, playlistId)
+            _songs.value = musicRepository.getSongs(playlistType, playlistId)
         }
     }
 

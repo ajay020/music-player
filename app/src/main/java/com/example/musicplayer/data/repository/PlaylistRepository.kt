@@ -2,12 +2,15 @@ package com.example.musicplayer.data.repository
 
 import com.example.musicplayer.data.database.PlaylistDao
 import com.example.musicplayer.data.model.Playlist
+import com.example.musicplayer.data.model.Song
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PlaylistRepository @Inject constructor(private val playlistDao: PlaylistDao) {
+class PlaylistRepository @Inject constructor(
+    private val playlistDao: PlaylistDao,
+) {
 
     fun getAllPlaylists(): Flow<List<Playlist>> = playlistDao.getAllPlaylists()
 

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.AlbumSongsActivity">
+    tools:context=".ui.SongListActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/songs_recycler_view"

@@ -5,14 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.musicplayer.data.model.Song
-import com.example.musicplayer.data.repository.SongRepository
+import com.example.musicplayer.data.repository.MusicRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
-    private val songRepository: SongRepository
+    private val songRepository: MusicRepository
 ) : ViewModel() {
 
     private val _songs = MutableLiveData<List<Song>>()
@@ -31,7 +31,7 @@ class PlayerViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            songRepository.loadSongs()
+//            songRepository.loadSongs()
         }
     }
 
@@ -39,9 +39,9 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             val songsList = when (playlistType) {
                 "SONGS" -> songRepository.getAllSongs()
-                "ALBUM" -> songRepository.getSongsByAlbum(playlistId ?: "")
-                "ARTIST" -> songRepository.getSongsByArtist(playlistId ?: "")
-                "PLAYLIST" -> songRepository.getSongsByPlaylist(playlistId ?: "")
+//                "ALBUM" -> songRepository.getSongsByAlbum(playlistId ?: "")
+//                "ARTIST" -> songRepository.getSongsByArtist(playlistId ?: "")
+//                "PLAYLIST" -> songRepository.getSongsByPlaylist(playlistId ?: "")
                 else -> emptyList()
             }
             _songs.value = songsList

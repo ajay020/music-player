@@ -15,14 +15,50 @@ import com.example.musicplayer.viewmodel.AlbumViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import android.util.Log
+
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
+import com.example.musicplayer.adapter.ArtistAdapter
+
+import com.example.musicplayer.data.model.Artist
+import com.example.musicplayer.viewmodel.ArtistsViewModel
+
 @AndroidEntryPoint
 class ArtistsFragment : Fragment() {
+    private val artistsViewModel: ArtistsViewModel by viewModels()
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var artistAdapter: ArtistAdapter
+    private var artistsList = mutableListOf<Artist>()
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view  =  inflater.inflate(R.layout.fragment_artists, container, false)
+        val view = inflater.inflate(R.layout.fragment_artists, container, false)
+        recyclerView = view.findViewById(R.id.artists_recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        artistAdapter = ArtistAdapter(artistsList) { artist ->
+            val intent = Intent(requireContext(), SongsDisplayActivity::class.java).apply {
+                putExtra("TYPE", "ARTIST")
+                putExtra("ARTIST_ID", artist.id)
+                putExtra("ARTIST_NAME", artist.name)
+            }
+            startActivity(intent)
+        }
+        recyclerView.adapter = artistAdapter
+
+        artistsViewModel.artists.observe(viewLifecycleOwner) { artists ->
+            artistsList.clear()
+            artistsList.addAll(artists)
+            artistAdapter.notifyDataSetChanged()
+        }
 
         return view
     }

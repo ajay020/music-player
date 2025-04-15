@@ -85,11 +85,12 @@ class MusicRepository @Inject constructor(
         }
     }
 
-    suspend fun getSongs(type: String, id: Long? = null): List<Song> {
+    suspend fun getSongs(type: String, id: Long? = null, folderName: String? = null): List<Song> {
         return when (type) {
             "ARTIST" -> id?.let { getSongsByArtistId(it) } ?: emptyList()
             "ALBUM" -> id?.let { getSongsByAlbumId(it) } ?: emptyList()
             "PLAYLIST" -> id?.let { getSongsByPlaylistId(it) } ?: emptyList()
+            "FOLDER" -> folderName?.let { getSongsByFolderName(it) } ?: emptyList()
             else -> getAllSongs()
         }
     }
@@ -222,6 +223,22 @@ class MusicRepository @Inject constructor(
             }
         }
         return@withContext songs
+    }
+
+    suspend fun getSongsByFolderName(folderName: String): List<Song> {
+        val songs = mutableListOf<Song>()
+
+        if (allSongs.isEmpty()) {
+            allSongs.addAll(getAllSongs())
+        }
+
+        allSongs.forEach { song ->
+            if (song.path.contains(folderName)) {
+                songs.add(song)
+            }
+        }
+
+        return songs
     }
 
     // Helper function to get the MediaStore's internal artist ID

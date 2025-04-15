@@ -30,6 +30,7 @@ class MusicViewModel @Inject constructor(
     private val playlistId = savedStateHandle.get<Long>("PLAYLIST_ID")
     private val artistId = savedStateHandle.get<Long>("ARTIST_ID")
     private val albumId = savedStateHandle.get<Long>("ALBUM_ID")
+    private val folderName = savedStateHandle.get<String>("FOLDER_NAME")
     private val type = savedStateHandle.get<String>("TYPE")
 
     private val _currentSong = MutableLiveData<Song?>()
@@ -84,6 +85,7 @@ class MusicViewModel @Inject constructor(
                 "PLAYLIST" -> playlistId?.let { loadSongsBasedOnType("PLAYLIST", it) }
                 "ARTIST" -> artistId?.let { loadSongsBasedOnType("ARTIST", it) }
                 "ALBUM" -> albumId?.let { loadSongsBasedOnType("ALBUM", it) }
+                "FOLDER" -> folderName?.let { loadSongsBasedOnType("FOLDER", folderName = it) }
             }
         }
     }
@@ -93,9 +95,17 @@ class MusicViewModel @Inject constructor(
         context.unregisterReceiver(receiver)
     }
 
-    fun loadSongsBasedOnType(playlistType: String, playlistId: Long? = null) {
+    fun loadSongsBasedOnType(
+        playlistType: String,
+        playlistId: Long? = null,
+        folderName: String? = null
+    ) {
         viewModelScope.launch {
-            _songs.value = musicRepository.getSongs(playlistType, playlistId)
+            _songs.value = musicRepository.getSongs(
+                type = playlistType,
+                id = playlistId,
+                folderName = folderName
+            )
         }
     }
 

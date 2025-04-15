@@ -29,6 +29,7 @@ class SongsDisplayActivity : AppCompatActivity() {
     private var originalSongsList: List<Song> = emptyList() // Store the original list
     private var songsList = mutableListOf<Song>()
     private lateinit var titleTextView: TextView
+    private lateinit var songCountTextView: TextView
     private lateinit var coverImageView: ImageView
     private lateinit var searchView: SearchView
 
@@ -48,15 +49,18 @@ class SongsDisplayActivity : AppCompatActivity() {
         supportActionBar?.title = ""
 
         titleTextView = findViewById(R.id.toolbar_title)
+        songCountTextView = findViewById(R.id.song_count)
         coverImageView = findViewById(R.id.toolbar_image)
         searchView = findViewById(R.id.search_view)
+
         setupSearchView()
+        setupAdapter()
+        // Retrieve data from Intent and save to SavedStateHandle
+        loadIntentDataIntoViewModel()
+        observeSongs()
+    }
 
-        // Initially set the title on the Toolbar
-        titleTextView.text =
-            intent.getStringExtra("PLAYLIST_NAME") ?: intent.getStringExtra("ARTIST_NAME")
-                    ?: intent.getStringExtra("ALBUM_NAME") ?: "Songs"
-
+    private fun setupAdapter() {
         recyclerView = findViewById(R.id.songs_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
         songAdapter = SongAdapter(
@@ -67,16 +71,13 @@ class SongsDisplayActivity : AppCompatActivity() {
             onBackButtonClick = { finish() },
         )
         recyclerView.adapter = songAdapter
-
-        // Retrieve data from Intent and save to SavedStateHandle
-        loadIntentDataIntoViewModel()
-        observeSongs()
     }
 
     private fun loadIntentDataIntoViewModel() {
         val type = intent.getStringExtra("TYPE")
         intent.getLongExtra("PLAYLIST_ID", -1).takeIf { it != -1L }?.let {
             musicViewModel.savedStateHandle["PLAYLIST_ID"] = it
+
         }
         intent.getLongExtra("ARTIST_ID", -1).takeIf { it != -1L }?.let {
             musicViewModel.savedStateHandle["ARTIST_ID"] = it
@@ -84,6 +85,11 @@ class SongsDisplayActivity : AppCompatActivity() {
         intent.getLongExtra("ALBUM_ID", -1).takeIf { it != -1L }?.let {
             musicViewModel.savedStateHandle["ALBUM_ID"] = it
         }
+
+        intent.getStringExtra("FOLDER_NAME")?.let {
+            musicViewModel.savedStateHandle["FOLDER_NAME"] = it
+        }
+
         musicViewModel.savedStateHandle["TYPE"] = type
         // The ViewModel will now automatically use the data from SavedStateHandle
         // in its init block and loadSongsBasedOnType()
@@ -96,24 +102,18 @@ class SongsDisplayActivity : AppCompatActivity() {
             "PLAYLIST" -> {
                 titleTextView.text =
                     intent.getStringExtra("PLAYLIST_NAME") ?: "Playlist Songs"
-                // Load playlist image if you have a way to get it
-                // Example (replace with your actual logic):
+
                 val playlistId = intent.getLongExtra("PLAYLIST_ID", -1L)
                 if (playlistId != -1L) {
                     loadPlaylistImage(playlistId)
-                } else {
-                    hideToolbarImage()
                 }
             }
 
             "ARTIST" -> {
                 titleTextView.text = intent.getStringExtra("ARTIST_NAME") ?: "Artist Songs"
-                // Load artist image if available
                 val artistId = intent.getLongExtra("ARTIST_ID", -1L)
                 if (artistId != -1L) {
                     loadArtistImage(artistId)
-                } else {
-                    hideToolbarImage()
                 }
             }
 
@@ -123,14 +123,15 @@ class SongsDisplayActivity : AppCompatActivity() {
                 val albumId = intent.getLongExtra("ALBUM_ID", -1L)
                 if (albumId != -1L) {
                     loadAlbumImage(albumId)
-                } else {
-                    hideToolbarImage()
                 }
+            }
+
+            "FOLDER" -> {
+                titleTextView.text = intent.getStringExtra("FOLDER_NAME") ?: "Folder Songs"
             }
 
             else -> {
                 titleTextView.text = "Songs"
-                hideToolbarImage()
             }
         }
     }
@@ -141,8 +142,6 @@ class SongsDisplayActivity : AppCompatActivity() {
         val imageUri = getPlaylistImageUri(playlistId) // Replace with your actual method
         if (imageUri != null) {
             showToolbarImage(imageUri)
-        } else {
-            hideToolbarImage()
         }
     }
 
@@ -188,8 +187,6 @@ class SongsDisplayActivity : AppCompatActivity() {
         val imageUri = getArtistImageUri(artistId) // Replace with your actual method
         if (imageUri != null) {
             showToolbarImage(imageUri)
-        } else {
-            hideToolbarImage()
         }
     }
 
@@ -200,17 +197,13 @@ class SongsDisplayActivity : AppCompatActivity() {
     }
 
     private fun showToolbarImage(uri: Uri) {
-        coverImageView.visibility = android.view.View.VISIBLE
-        Glide.with(this)
-            .load(uri)
-            .placeholder(R.drawable.ic_music_placeholder) // Default placeholder
-            .error(R.drawable.ic_music_placeholder)     // Error placeholder
-            .into(coverImageView)
+//        Glide.with(this)
+//            .load(uri)
+//            .placeholder(R.drawable.ic_music_placeholder) // Default placeholder
+//            .error(R.drawable.ic_music_placeholder)     // Error placeholder
+//            .into(coverImageView)
     }
 
-    private fun hideToolbarImage() {
-        coverImageView.visibility = android.view.View.GONE
-    }
 
     // Implement these methods based on how you store and access images
     private fun getPlaylistImageUri(playlistId: Long): Uri? {
@@ -227,8 +220,11 @@ class SongsDisplayActivity : AppCompatActivity() {
         musicViewModel.songs.observe(this) { songs ->
             originalSongsList = songs // Store the original list
             songsList.clear()
-            songsList.addAll(originalSongsList) // Initialize the displayed list
+            songsList.addAll(originalSongsList)
             songAdapter.notifyDataSetChanged()
+
+            // Update the song count in the Toolbar
+            songCountTextView.text = "${songsList.size} songs"
         }
     }
 

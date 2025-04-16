@@ -22,20 +22,29 @@ import com.example.musicplayer.MainActivity
 import com.example.musicplayer.R
 import com.example.musicplayer.adapter.SongAdapter
 import com.example.musicplayer.data.model.Playlist
+import com.example.musicplayer.data.model.Searchable
 import com.example.musicplayer.data.model.Song
 import com.example.musicplayer.viewmodel.MusicViewModel
 import com.example.musicplayer.viewmodel.PlaylistViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SongsFragment : Fragment() {
+class SongsFragment : Fragment(), Searchable {
     private val musicViewModel: MusicViewModel by activityViewModels()
     private val playlistViewModel: PlaylistViewModel by viewModels()
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var songAdapter: SongAdapter
+    private var originalSongsList: List<Song> = emptyList() // Store the original list
     private var songsList = mutableListOf<Song>()
     private var userPlaylists = listOf<Playlist>()
+
+    private var songAdapter: SongAdapter? = SongAdapter(
+        songs = songsList,
+        onSongClick = { song, index -> playSong(song, index) },
+        onBackButtonClick = { (context as? MainActivity)?.finish() },
+        onSearchButtonClick = { Log.d("SongsFragment", "Search button in header clicked") },
+        onMoreOptionsClick = { showSongOptionsDialog(it) }
+    )
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -53,49 +62,48 @@ class SongsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_songs, container, false)
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         recyclerView = view.findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        songAdapter = SongAdapter(
-            songs = songsList,
-            onSongClick = { song, index ->
-                playSong(song, index)
-            },
-            onBackButtonClick = { (view.context as? MainActivity)?.finish() },
-            onSearchButtonClick = {
-                // Implement your search functionality here
-                Log.d("AlbumSongsActivity", "Search button in header clicked")
-                // You might want to show a search bar or navigate to a search activity
-            },
-            onMoreOptionsClick = { song ->
-                showSongOptionsDialog(song)
-            }
-        )
         recyclerView.adapter = songAdapter
 
-        // Observe user playlists
-        playlistViewModel.allPlaylists.observe(viewLifecycleOwner) { playlists ->
-            userPlaylists = playlists.filter { !it.isDefault }
-        }
+        // Observe data and set up listeners here
+        requestAudioPermission()
+        observeUserPlaylists()
+        observeSongs()
 
-        // Request READ_MEDIA_AUDIO permission
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.READ_MEDIA_AUDIO
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_AUDIO)
-        } else {
-            musicViewModel.loadSongsBasedOnType("SONGS")
-        }
+        Log.d("SongsFragment", "onViewCreated: originalSongsList size = ${originalSongsList.size}")
+    }
 
-        musicViewModel.songs.observe(viewLifecycleOwner) { songs ->
-            songsList.clear()  // Clear the old list before adding new songs
-            songsList.addAll(songs)
-            songAdapter.notifyDataSetChanged() // Notify adapter about the new data
+    override fun onSearchQuery(query: String?) {
+        Log.d(
+            "SongsFragment",
+            "onSearchQuery called with query: $query, originalSongsList size = ${originalSongsList.size}"
+        )
+        query?.let {
+            val filteredList = if (it.isNotBlank()) {
+                originalSongsList.filter { song ->
+                    song.title.contains(it, ignoreCase = true) ||
+                            song.artist.contains(it, ignoreCase = true)
+                }
+            } else {
+                originalSongsList
+            }
+            Log.d("SongsFragment", "onSearchQuery: filteredList size = ${filteredList.size}")
+            updateRecyclerView(filteredList)
         }
+    }
 
-        return view
+    private fun updateRecyclerView(filteredSongs: List<Song>) {
+        songsList.clear()
+        songsList.addAll(filteredSongs)
+        songAdapter?.notifyDataSetChanged()
     }
 
     private fun showSongOptionsDialog(song: Song) {
@@ -160,6 +168,39 @@ class SongsFragment : Fragment() {
         builder.show()
     }
 
+    private fun observeUserPlaylists() {
+        // Observe user playlists
+        playlistViewModel.allPlaylists.observe(viewLifecycleOwner) { playlists ->
+            userPlaylists = playlists.filter { !it.isDefault }
+        }
+    }
+
+    private fun observeSongs() {
+        musicViewModel.songs.observe(viewLifecycleOwner) { songs ->
+            Log.d("SongsFragment", "observeSongs: Received ${songs.size} songs")
+            originalSongsList = songs // Ensure originalSongsList is updated here
+            songsList.clear()
+            songsList.addAll(songs)
+            songAdapter?.notifyDataSetChanged()
+            Log.d(
+                "SongsFragment",
+                "observeSongs: originalSongsList updated to size = ${originalSongsList.size}"
+            )
+        }
+    }
+
+    private fun requestAudioPermission() {
+        // Request READ_MEDIA_AUDIO permission
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_MEDIA_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_AUDIO)
+        } else {
+            musicViewModel.loadSongsBasedOnType("SONGS")
+        }
+    }
 
     private fun playSong(song: Song, index: Int) {
         musicViewModel.playSong(song, index)

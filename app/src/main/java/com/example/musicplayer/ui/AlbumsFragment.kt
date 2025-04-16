@@ -12,15 +12,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayer.R
 import com.example.musicplayer.adapter.AlbumAdapter
 import com.example.musicplayer.data.model.Album
+import com.example.musicplayer.data.model.Searchable
 import com.example.musicplayer.viewmodel.AlbumViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AlbumsFragment : Fragment() {
+class AlbumsFragment : Fragment(), Searchable {
     private val viewModel: AlbumViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var albumAdapter: AlbumAdapter
     private var albumList = mutableListOf<Album>()
+    private var originalAlbumList = emptyList<Album>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,6 +46,7 @@ class AlbumsFragment : Fragment() {
         viewModel.albums.observe(viewLifecycleOwner) { albums ->
             albumList.clear()  // Clear the old list before adding new albums
             albumList.addAll(albums)
+            originalAlbumList = albums
             albumAdapter.notifyDataSetChanged() // Notify adapter about the new data
         }
 
@@ -51,5 +54,25 @@ class AlbumsFragment : Fragment() {
         viewModel.loadAlbums()
 
         return view
+    }
+
+    override fun onSearchQuery(query: String?) {
+        query?.let {
+            val filteredList = if (it.isNotBlank()) {
+                originalAlbumList.filter { album ->
+                    album.name.contains(it, ignoreCase = true)
+                }
+            } else {
+                originalAlbumList
+            }
+            updateAlbumListAdapter(filteredList)
+        }
+    }
+
+    private fun updateAlbumListAdapter(filteredList: List<Album>) {
+        albumList.clear()
+        albumList.addAll(filteredList)
+        albumAdapter.notifyDataSetChanged()
+        recyclerView.scrollToPosition(0)
     }
 }

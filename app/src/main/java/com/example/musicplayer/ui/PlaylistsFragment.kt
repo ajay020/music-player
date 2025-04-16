@@ -15,16 +15,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayer.R
 import com.example.musicplayer.adapter.PlaylistAdapter
 import com.example.musicplayer.data.model.Playlist
+import com.example.musicplayer.data.model.Searchable
 import com.example.musicplayer.viewmodel.PlaylistViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PlaylistsFragment : Fragment() {
+class PlaylistsFragment : Fragment(), Searchable {
     private val playlistViewModel: PlaylistViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var playlistAdapter: PlaylistAdapter
     private lateinit var fabAddPlaylist: FloatingActionButton
+    private val originalPlaylist = mutableListOf<Playlist>()
     private val playlistList = mutableListOf<Playlist>()
 
     override fun onCreateView(
@@ -52,7 +54,11 @@ class PlaylistsFragment : Fragment() {
         // Observe all playlists
         playlistViewModel.allPlaylists.observe(viewLifecycleOwner) { playlists ->
             playlistList.clear()
+            originalPlaylist.clear()
+
+            originalPlaylist.addAll(playlists)
             playlistList.addAll(playlists)
+
             playlistAdapter.notifyDataSetChanged()
         }
 
@@ -143,5 +149,25 @@ class PlaylistsFragment : Fragment() {
             dialog.cancel()
         }
         builder.show()
+    }
+
+    override fun onSearchQuery(query: String?) {
+        query?.let {
+            val filteredList = if (it.isNotBlank()) {
+                originalPlaylist.filter { playlist ->
+                    playlist.name.contains(it, ignoreCase = true)
+                }
+            } else {
+                originalPlaylist
+            }
+
+            updatePlaylistAdapter(filteredList)
+        }
+    }
+
+    private fun updatePlaylistAdapter(filteredList: List<Playlist>) {
+        playlistList.clear()
+        playlistList.addAll(filteredList)
+        playlistAdapter.notifyDataSetChanged()
     }
 }

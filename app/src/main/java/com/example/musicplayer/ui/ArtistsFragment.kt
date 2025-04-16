@@ -26,14 +26,16 @@ import androidx.core.content.ContextCompat
 import com.example.musicplayer.adapter.ArtistAdapter
 
 import com.example.musicplayer.data.model.Artist
+import com.example.musicplayer.data.model.Searchable
 import com.example.musicplayer.viewmodel.ArtistsViewModel
 
 @AndroidEntryPoint
-class ArtistsFragment : Fragment() {
+class ArtistsFragment : Fragment(), Searchable {
     private val artistsViewModel: ArtistsViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var artistAdapter: ArtistAdapter
     private var artistsList = mutableListOf<Artist>()
+    private var originalArtistList = emptyList<Artist>()
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreateView(
@@ -57,9 +59,32 @@ class ArtistsFragment : Fragment() {
         artistsViewModel.artists.observe(viewLifecycleOwner) { artists ->
             artistsList.clear()
             artistsList.addAll(artists)
+            originalArtistList = artists
             artistAdapter.notifyDataSetChanged()
         }
 
         return view
+    }
+
+    override fun onSearchQuery(query: String?) {
+        query?.let {
+            val filteredList = if (it.isNotBlank()) {
+                originalArtistList.filter { artist ->
+                    artist.name.contains(it, ignoreCase = true)
+                }
+            } else {
+                originalArtistList
+
+            }
+            updateArtistListAdapter(filteredList)
+
+        }
+    }
+
+    fun updateArtistListAdapter(filteredList: List<Artist>) {
+        artistsList.clear()
+        artistsList.addAll(filteredList)
+        artistAdapter.notifyDataSetChanged()
+        recyclerView.scrollToPosition(0)
     }
 }

@@ -8,7 +8,6 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <!-- Fixed Toolbar (Title + Search Icon) -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
         android:layout_width="match_parent"
@@ -16,8 +15,18 @@
         android:background="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
         app:menu="@menu/top_app_bar_menu"
-        app:title="My Music"
-        app:titleTextColor="@android:color/white" />
+        app:title="Music"
+        app:titleTextColor="@android:color/white">
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_view_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:iconifiedByDefault="true"
+            android:paddingHorizontal="8dp"
+            app:queryHint="Search songs..." />
+    </com.google.android.material.appbar.MaterialToolbar>
 
     <!-- TabLayout for Categories -->
     <com.google.android.material.tabs.TabLayout

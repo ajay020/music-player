@@ -2,6 +2,7 @@ package com.example.musicplayer
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -97,30 +98,35 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showMoreOptionsDialog() {
-        val dialog = AlertDialog.Builder(this).create()
-        val layoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val view = layoutInflater.inflate(R.layout.dialog_more_options, null)
+        val dialog = Dialog(this)
+        val inflater = LayoutInflater.from(this)
+        val view = inflater.inflate(R.layout.dialog_more_options, null)
 
-        dialog.setView(view)
+        dialog.setContentView(view)
 
-        // Customize the dialog's appearance
-        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+        // Customize the dialog's window
         val window = dialog.window
-        val wlp = window?.attributes
-        wlp?.gravity = Gravity.CENTER // Set gravity to center
+        window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+        window?.setGravity(Gravity.CENTER)
 
-        wlp?.width = WindowManager.LayoutParams.WRAP_CONTENT
-        wlp?.height = WindowManager.LayoutParams.WRAP_CONTENT
-        window?.attributes = wlp
+        // Set fixed width and height
+        val fixedWidthInPixels = resources.getDimensionPixelSize(R.dimen.more_options_dialog_width)
+        val fixedHeightInPixels =
+            resources.getDimensionPixelSize(R.dimen.more_options_dialog_height)
+        window?.setLayout(fixedWidthInPixels, fixedHeightInPixels)
 
-        // Handle click listeners for the options
+        // Optional: Disable outside touch to cancel
+        dialog.setCanceledOnTouchOutside(true)
+
+        dialog.show()
+
+        // Click listeners
         val sortByOption = view.findViewById<LinearLayout>(R.id.option_sort_by)
         val equalizerOption = view.findViewById<LinearLayout>(R.id.option_equalizer)
         val settingsOption = view.findViewById<LinearLayout>(R.id.option_settings)
 
         sortByOption?.setOnClickListener {
             showSortByDialog()
-            dialog.dismiss() // Dismiss the main options dialog
             dialog.dismiss()
         }
 
@@ -133,9 +139,8 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
         }
-
-        dialog.show()
     }
+
 
     private fun showSortByDialog() {
         val currentFragment =

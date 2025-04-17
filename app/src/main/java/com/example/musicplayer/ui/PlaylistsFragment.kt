@@ -16,12 +16,13 @@ import com.example.musicplayer.R
 import com.example.musicplayer.adapter.PlaylistAdapter
 import com.example.musicplayer.data.model.Playlist
 import com.example.musicplayer.data.model.Searchable
+import com.example.musicplayer.data.model.Sortable
 import com.example.musicplayer.viewmodel.PlaylistViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PlaylistsFragment : Fragment(), Searchable {
+class PlaylistsFragment : Fragment(), Searchable, Sortable {
     private val playlistViewModel: PlaylistViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var playlistAdapter: PlaylistAdapter
@@ -169,5 +170,23 @@ class PlaylistsFragment : Fragment(), Searchable {
         playlistList.clear()
         playlistList.addAll(filteredList)
         playlistAdapter.notifyDataSetChanged()
+    }
+
+    override fun onSortBy(sortBy: String) {
+        when (sortBy) {
+            "Title" -> {
+                val sortedList = originalPlaylist.sortedBy { it.name }
+                updatePlaylistAdapter(sortedList)
+            }
+
+            "Song Count" -> {
+                val sortedList = originalPlaylist.sortedBy { it.songCount }
+                updatePlaylistAdapter(sortedList)
+            }
+        }
+    }
+
+    override fun getSortOptions(): List<String> {
+        return listOf("Title", "Song Count")
     }
 }

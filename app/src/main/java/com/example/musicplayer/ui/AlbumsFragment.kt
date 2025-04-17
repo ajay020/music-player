@@ -13,11 +13,12 @@ import com.example.musicplayer.R
 import com.example.musicplayer.adapter.AlbumAdapter
 import com.example.musicplayer.data.model.Album
 import com.example.musicplayer.data.model.Searchable
+import com.example.musicplayer.data.model.Sortable
 import com.example.musicplayer.viewmodel.AlbumViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AlbumsFragment : Fragment(), Searchable {
+class AlbumsFragment : Fragment(), Searchable, Sortable {
     private val viewModel: AlbumViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var albumAdapter: AlbumAdapter
@@ -74,5 +75,23 @@ class AlbumsFragment : Fragment(), Searchable {
         albumList.addAll(filteredList)
         albumAdapter.notifyDataSetChanged()
         recyclerView.scrollToPosition(0)
+    }
+
+    override fun onSortBy(sortBy: String) {
+        when (sortBy) {
+            "Name" -> {
+                val sortedList = originalAlbumList.sortedBy { it.name }
+                updateAlbumListAdapter(sortedList)
+            }
+
+            "Song count" -> {
+                val sortedList = originalAlbumList.sortedBy { it.songCount }
+                updateAlbumListAdapter(sortedList)
+            }
+        }
+    }
+
+    override fun getSortOptions(): List<String> {
+        return listOf("Name", "Song count")
     }
 }

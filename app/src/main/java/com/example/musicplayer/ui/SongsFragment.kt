@@ -24,12 +24,13 @@ import com.example.musicplayer.adapter.SongAdapter
 import com.example.musicplayer.data.model.Playlist
 import com.example.musicplayer.data.model.Searchable
 import com.example.musicplayer.data.model.Song
+import com.example.musicplayer.data.model.Sortable
 import com.example.musicplayer.viewmodel.MusicViewModel
 import com.example.musicplayer.viewmodel.PlaylistViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SongsFragment : Fragment(), Searchable {
+class SongsFragment : Fragment(), Searchable, Sortable {
     private val musicViewModel: MusicViewModel by activityViewModels()
     private val playlistViewModel: PlaylistViewModel by viewModels()
 
@@ -77,15 +78,9 @@ class SongsFragment : Fragment(), Searchable {
         requestAudioPermission()
         observeUserPlaylists()
         observeSongs()
-
-        Log.d("SongsFragment", "onViewCreated: originalSongsList size = ${originalSongsList.size}")
     }
 
     override fun onSearchQuery(query: String?) {
-        Log.d(
-            "SongsFragment",
-            "onSearchQuery called with query: $query, originalSongsList size = ${originalSongsList.size}"
-        )
         query?.let {
             val filteredList = if (it.isNotBlank()) {
                 originalSongsList.filter { song ->
@@ -95,7 +90,6 @@ class SongsFragment : Fragment(), Searchable {
             } else {
                 originalSongsList
             }
-            Log.d("SongsFragment", "onSearchQuery: filteredList size = ${filteredList.size}")
             updateRecyclerView(filteredList)
         }
     }
@@ -177,18 +171,14 @@ class SongsFragment : Fragment(), Searchable {
 
     private fun observeSongs() {
         musicViewModel.songs.observe(viewLifecycleOwner) { songs ->
-            Log.d("SongsFragment", "observeSongs: Received ${songs.size} songs")
             originalSongsList = songs // Ensure originalSongsList is updated here
             songsList.clear()
             songsList.addAll(songs)
             songAdapter?.notifyDataSetChanged()
-            Log.d(
-                "SongsFragment",
-                "observeSongs: originalSongsList updated to size = ${originalSongsList.size}"
-            )
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun requestAudioPermission() {
         // Request READ_MEDIA_AUDIO permission
         if (ContextCompat.checkSelfPermission(
@@ -204,5 +194,29 @@ class SongsFragment : Fragment(), Searchable {
 
     private fun playSong(song: Song, index: Int) {
         musicViewModel.playSong(song, index)
+    }
+
+    override fun onSortBy(sortBy: String) {
+        when (sortBy) {
+            "Title" -> {
+                val sortedList = originalSongsList.sortedBy { it.title }
+                updateRecyclerView(sortedList)
+            }
+
+            "Artist" -> {
+                val sortedList = originalSongsList.sortedBy { it.artist }
+                updateRecyclerView(sortedList)
+            }
+
+            "Duration" -> {
+                val sortedList =
+                    originalSongsList.sortedBy { it.duration } // Assuming duration is a comparable property
+                updateRecyclerView(sortedList)
+            }
+        }
+    }
+
+    override fun getSortOptions(): List<String> {
+        return listOf("Title", "Artist", "Duration")
     }
 }

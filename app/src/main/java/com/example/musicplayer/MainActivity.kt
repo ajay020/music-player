@@ -1,14 +1,29 @@
 package com.example.musicplayer
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.WindowManager
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
@@ -19,6 +34,8 @@ import com.example.musicplayer.viewmodel.MusicViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.core.graphics.drawable.toDrawable
+import com.example.musicplayer.data.model.Sortable
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -26,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
     private lateinit var searchView: SearchView
     private lateinit var pagerAdapter: MusicPagerAdapter
+    private lateinit var toolbar: Toolbar
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +57,9 @@ class MainActivity : AppCompatActivity() {
         tabLayout = findViewById(R.id.tab_layout)
         viewPager = findViewById(R.id.viewPager)
         searchView = findViewById(R.id.search_view_main)
+        toolbar = findViewById(R.id.toolbar_main)
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = getString(R.string.app_name)
 
         setupSearchView()
 
@@ -59,6 +80,101 @@ class MainActivity : AppCompatActivity() {
         }.attach()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.top_app_bar_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_more -> {
+                showMoreOptionsDialog()
+                true
+            }
+            // Handle other menu items if you have them
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showMoreOptionsDialog() {
+        val dialog = AlertDialog.Builder(this).create()
+        val layoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val view = layoutInflater.inflate(R.layout.dialog_more_options, null)
+
+        dialog.setView(view)
+
+        // Customize the dialog's appearance
+        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+        val window = dialog.window
+        val wlp = window?.attributes
+        wlp?.gravity = Gravity.CENTER // Set gravity to center
+
+        wlp?.width = WindowManager.LayoutParams.WRAP_CONTENT
+        wlp?.height = WindowManager.LayoutParams.WRAP_CONTENT
+        window?.attributes = wlp
+
+        // Handle click listeners for the options
+        val sortByOption = view.findViewById<LinearLayout>(R.id.option_sort_by)
+        val equalizerOption = view.findViewById<LinearLayout>(R.id.option_equalizer)
+        val settingsOption = view.findViewById<LinearLayout>(R.id.option_settings)
+
+        sortByOption?.setOnClickListener {
+            showSortByDialog()
+            dialog.dismiss() // Dismiss the main options dialog
+            dialog.dismiss()
+        }
+
+        equalizerOption?.setOnClickListener {
+            Toast.makeText(this, "Equalizer", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+
+        settingsOption?.setOnClickListener {
+            Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun showSortByDialog() {
+        val currentFragment =
+            (viewPager.adapter as? MusicPagerAdapter)?.getCurrentFragment(viewPager.currentItem)
+
+        if (currentFragment is Sortable) {
+            val sortOptions = currentFragment.getSortOptions().toTypedArray()
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Sort By")
+
+            var selectedSortOption = ""
+
+            builder.setSingleChoiceItems(sortOptions, -1) { _, which ->
+                selectedSortOption = sortOptions[which]
+            }
+
+            builder.setPositiveButton("OK") { dialog, _ ->
+                if (selectedSortOption.isNotEmpty()) {
+                    Toast.makeText(this, "Sorted by: $selectedSortOption", Toast.LENGTH_SHORT)
+                        .show()
+                    (currentFragment as? Sortable)?.onSortBy(selectedSortOption)
+                }
+                dialog.dismiss()
+            }
+
+            builder.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+
+            val dialog = builder.create()
+            dialog.show()
+        } else {
+            // Handle the case where the current fragment doesn't implement Sortable
+            Toast.makeText(this, "Sorting not available for this section", Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+
+
     private fun setupSearchView() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -74,7 +190,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
 
     private fun requestNeededPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

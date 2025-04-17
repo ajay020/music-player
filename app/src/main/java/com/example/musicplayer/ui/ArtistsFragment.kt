@@ -27,10 +27,11 @@ import com.example.musicplayer.adapter.ArtistAdapter
 
 import com.example.musicplayer.data.model.Artist
 import com.example.musicplayer.data.model.Searchable
+import com.example.musicplayer.data.model.Sortable
 import com.example.musicplayer.viewmodel.ArtistsViewModel
 
 @AndroidEntryPoint
-class ArtistsFragment : Fragment(), Searchable {
+class ArtistsFragment : Fragment(), Searchable, Sortable {
     private val artistsViewModel: ArtistsViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var artistAdapter: ArtistAdapter
@@ -86,5 +87,28 @@ class ArtistsFragment : Fragment(), Searchable {
         artistsList.addAll(filteredList)
         artistAdapter.notifyDataSetChanged()
         recyclerView.scrollToPosition(0)
+    }
+
+    override fun onSortBy(sortBy: String) {
+        when (sortBy) {
+            "Name" -> {
+                val sortedList = originalArtistList.sortedBy { it.name }
+                updateArtistListAdapter(sortedList)
+            }
+
+            "Album count" -> {
+                val sortedList = originalArtistList.sortedBy { it.numberOfAlbums }
+                updateArtistListAdapter(sortedList)
+            }
+
+            "Song count" -> {
+                val sortedList = originalArtistList.sortedBy { it.numberOfTracks }
+                updateArtistListAdapter(sortedList)
+            }
+        }
+    }
+
+    override fun getSortOptions(): List<String> {
+        return listOf("Name", "Album count", "Song count") // Example options
     }
 }

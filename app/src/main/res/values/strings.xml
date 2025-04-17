@@ -4,4 +4,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search">Search</string>
     <string name="track_cover">track cover</string>
+    <string name="more">more</string>
+    <string name="equalizer">Equalizer</string>
+    <string name="settings">Settings</string>
+    <string name="sorted_by">Sorted By</string>
 </resources>

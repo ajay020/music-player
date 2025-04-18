@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/rounded_dialog_background"
     android:gravity="center_vertical"
     android:orientation="vertical"
     android:padding="16dp">
@@ -34,10 +33,6 @@
 
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
 
     <LinearLayout
         android:id="@+id/option_equalizer"

@@ -12,11 +12,10 @@
         android:id="@+id/toolbar_main"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+        android:theme="@style/ThemeOverlay.Toolbar"
         app:menu="@menu/top_app_bar_menu"
-        app:title="Music"
-        app:titleTextColor="@android:color/white">
+        app:titleTextColor="@color/md_theme_onBackground"
+        app:title="Music">
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search_view_main"

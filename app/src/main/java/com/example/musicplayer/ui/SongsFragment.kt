@@ -27,6 +27,7 @@ import com.example.musicplayer.data.model.Song
 import com.example.musicplayer.data.model.Sortable
 import com.example.musicplayer.viewmodel.MusicViewModel
 import com.example.musicplayer.viewmodel.PlaylistViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -66,6 +67,7 @@ class SongsFragment : Fragment(), Searchable, Sortable {
         return view
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -101,7 +103,7 @@ class SongsFragment : Fragment(), Searchable, Sortable {
     }
 
     private fun showSongOptionsDialog(song: Song) {
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = MaterialAlertDialogBuilder(requireContext())
         builder.setTitle(song.title)
         val options = arrayOf("Add to Playlist", "Add to Queue", "Edit Tags") // Add more options
         builder.setItems(options) { dialog, which ->
@@ -139,7 +141,8 @@ class SongsFragment : Fragment(), Searchable, Sortable {
         val checkedItems =
             BooleanArray(userPlaylists.size) { false } // Initially no playlist selected
 
-        val builder = AlertDialog.Builder(requireContext())
+        val builder =
+            MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_MusicPlayer_Dialog)
         builder.setTitle("Add to Playlist")
         builder.setMultiChoiceItems(playlistNames, checkedItems) { _, which, isChecked ->
             if (isChecked) {

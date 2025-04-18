@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Base.Theme.MusicPlayer" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- Status and Navigation bar colors -->
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+        <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
+
+    </style>
+</resources>

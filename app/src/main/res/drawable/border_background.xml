@@ -8,7 +8,7 @@
     <!-- Border color and width -->
     <stroke
         android:width="2dp"
-        android:color="@color/white" />
+        android:color="#ffff" />
 
     <!-- Background color -->
     <solid android:color="@android:color/white" />

@@ -10,8 +10,9 @@
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
         android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.Toolbar"
+        android:background="?attr/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -26,10 +27,10 @@
             android:insetTop="0dp"
             android:insetRight="0dp"
             android:insetBottom="0dp"
-            android:scaleX="2"
-            android:scaleY="2"
             android:minWidth="48dp"
             android:minHeight="48dp"
+            android:scaleX="2"
+            android:scaleY="2"
             android:textColor="?attr/colorOnPrimary"
             app:icon="@drawable/ic_arrow_down"
             app:iconTint="?attr/colorOnPrimary" />
@@ -138,7 +139,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="12dp"
             android:src="@drawable/ic_prev"
-            android:tint="?attr/colorControlNormal" />
+            app:tint="?attr/colorControlNormal" />
 
         <ImageButton
             android:id="@+id/btn_play_pause"
@@ -150,7 +151,7 @@
             android:scaleX="1.2"
             android:scaleY="1.2"
             android:src="@drawable/ic_play"
-            android:tint="?attr/colorControlNormal" />
+            app:tint="?attr/colorControlNormal" />
 
         <ImageButton
             android:id="@+id/btn_next"
@@ -159,7 +160,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="12dp"
             android:src="@drawable/ic_next"
-            android:tint="?attr/colorControlNormal" />
+            app:tint="?attr/colorControlNormal" />
 
     </LinearLayout>
 

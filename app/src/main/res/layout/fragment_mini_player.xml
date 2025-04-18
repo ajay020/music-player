@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:background="@color/white"
     android:id="@+id/mini_player"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp">
 
@@ -13,28 +11,28 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:scaleType="centerCrop"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_music_placeholder"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:src="@drawable/ic_music_placeholder" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@id/mini_album_art"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/mini_btn_prev"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintStart_toEndOf="@id/mini_album_art"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/mini_song_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:ellipsize="end"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/mini_artist_name"
@@ -50,9 +48,9 @@
         android:layout_height="52dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_prev"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/mini_btn_play_pause"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/mini_btn_play_pause"
@@ -60,9 +58,9 @@
         android:layout_height="52dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_play"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/mini_btn_next"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/mini_btn_next"
@@ -70,8 +68,8 @@
         android:layout_height="52dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_next"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

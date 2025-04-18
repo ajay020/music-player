@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -11,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
@@ -23,10 +25,12 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.example.musicplayer.adapter.MusicPagerAdapter
 import com.example.musicplayer.data.model.Searchable
@@ -37,6 +41,11 @@ import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.core.graphics.drawable.toDrawable
 import com.example.musicplayer.data.model.Sortable
+import com.example.musicplayer.ui.SettingsActivity
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.dialog.MaterialDialogs
+import com.google.common.io.Resources
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -48,6 +57,8 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply the saved theme before calling super.onCreate()
+        applySavedTheme()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -83,6 +94,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.top_app_bar_menu, menu)
+
+        // Get your icon item
+        val menuItem = menu.findItem(R.id.action_more)
+        val drawable = menuItem.icon
+
+        // Get the themed color for icon
+        val typedValue = TypedValue()
+        theme.resolveAttribute(android.R.attr.colorControlNormal, typedValue, true)
+        val iconColor = ContextCompat.getColor(this, typedValue.resourceId)
+
+        drawable?.setTint(iconColor)
+        menuItem.icon = drawable
+
         return true
     }
 
@@ -97,8 +121,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun applySavedTheme() {
+        val sharedPreferences = getSharedPreferences("app_settings", Context.MODE_PRIVATE)
+        val savedTheme = sharedPreferences.getString("theme", "light") ?: "light"
+
+        when (savedTheme) {
+            "light" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            "dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            "system" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        }
+    }
+
     private fun showMoreOptionsDialog() {
-        val dialog = Dialog(this)
+        val dialog = Dialog(this, R.style.ThemeOverlay_MusicPlayer_Dialog)
         val inflater = LayoutInflater.from(this)
         val view = inflater.inflate(R.layout.dialog_more_options, null)
 
@@ -136,7 +171,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         settingsOption?.setOnClickListener {
-            Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
             dialog.dismiss()
         }
     }
@@ -148,7 +184,7 @@ class MainActivity : AppCompatActivity() {
 
         if (currentFragment is Sortable) {
             val sortOptions = currentFragment.getSortOptions().toTypedArray()
-            val builder = AlertDialog.Builder(this)
+            val builder = MaterialAlertDialogBuilder(this, R.style.ThemeOverlay_MusicPlayer_Dialog)
             builder.setTitle("Sort By")
 
             var selectedSortOption = ""

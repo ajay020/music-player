@@ -3,6 +3,8 @@ package com.example.musicplayer.ui
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -13,6 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.musicplayer.R
 import com.example.musicplayer.adapter.SongAdapter
 import com.example.musicplayer.data.model.Song
@@ -25,12 +28,13 @@ class SongsDisplayActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var songAdapter: SongAdapter
-    private var originalSongsList: List<Song> = emptyList() // Store the original list
+    private var originalSongsList: List<Song> = emptyList()
     private var songsList = mutableListOf<Song>()
     private lateinit var titleTextView: TextView
     private lateinit var songCountTextView: TextView
     private lateinit var coverImageView: ImageView
     private lateinit var searchView: SearchView
+    private lateinit var miniPlayerContainer: FrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,12 +55,24 @@ class SongsDisplayActivity : AppCompatActivity() {
         songCountTextView = findViewById(R.id.song_count)
         coverImageView = findViewById(R.id.toolbar_image)
         searchView = findViewById(R.id.search_view)
+        miniPlayerContainer = findViewById(R.id.mini_player_container)
 
         setupSearchView()
         setupAdapter()
         // Retrieve data from Intent and save to SavedStateHandle
         loadIntentDataIntoViewModel()
         observeSongs()
+        observeCurrentSong()
+    }
+
+    private fun observeCurrentSong() {
+        musicViewModel.currentSong.observe(this) { selectedSong ->
+            if (selectedSong != null) {
+                miniPlayerContainer.visibility = View.VISIBLE
+            } else {
+                miniPlayerContainer.visibility = View.GONE
+            }
+        }
     }
 
     private fun setupAdapter() {
@@ -196,11 +212,11 @@ class SongsDisplayActivity : AppCompatActivity() {
     }
 
     private fun showToolbarImage(uri: Uri) {
-//        Glide.with(this)
-//            .load(uri)
-//            .placeholder(R.drawable.ic_music_placeholder) // Default placeholder
-//            .error(R.drawable.ic_music_placeholder)     // Error placeholder
-//            .into(coverImageView)
+        Glide.with(this)
+            .load(uri)
+            .placeholder(R.drawable.ic_music_placeholder) // Default placeholder
+            .error(R.drawable.ic_music_placeholder)     // Error placeholder
+            .into(coverImageView)
     }
 
 

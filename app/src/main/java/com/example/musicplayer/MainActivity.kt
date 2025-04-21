@@ -17,6 +17,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -41,6 +42,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.FragmentContainerView
 import com.example.musicplayer.data.model.Sortable
 import com.example.musicplayer.ui.SettingsActivity
 import com.google.android.material.color.DynamicColors
@@ -60,6 +62,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchView: SearchView
     private lateinit var pagerAdapter: MusicPagerAdapter
     private lateinit var toolbar: Toolbar
+    private lateinit var miniPlayerContainer: FragmentContainerView
+
+    private val musicViewModel: MusicViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,6 +84,8 @@ class MainActivity : AppCompatActivity() {
         viewPager = findViewById(R.id.viewPager)
         searchView = findViewById(R.id.search_view_main)
         toolbar = findViewById(R.id.toolbar_main)
+        miniPlayerContainer = findViewById(R.id.mini_player_fragment)
+
         setSupportActionBar(toolbar)
         supportActionBar?.title = getString(R.string.app_name)
 
@@ -99,6 +106,18 @@ class MainActivity : AppCompatActivity() {
                 else -> null
             }
         }.attach()
+
+        observeCurrentSong()
+    }
+
+    private fun observeCurrentSong() {
+        musicViewModel.currentSong.observe(this) { selectedSong ->
+            if (selectedSong != null) {
+                miniPlayerContainer.visibility = View.VISIBLE
+            } else {
+                miniPlayerContainer.visibility = View.GONE
+            }
+        }
     }
 
     private fun applySavedTheme() {
@@ -186,7 +205,6 @@ class MainActivity : AppCompatActivity() {
             dialog.dismiss()
         }
     }
-
 
     private fun showSortByDialog() {
         val currentFragment =

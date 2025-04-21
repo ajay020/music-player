@@ -103,16 +103,17 @@
         app:layout_constraintTop_toBottomOf="@id/appBarLayout" />
 
     <FrameLayout
+        android:id="@+id/mini_player_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom">
+        android:layout_gravity="bottom"
+        android:visibility="gone">
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/mini_player_fragment"
             android:name="com.example.musicplayer.ui.MiniPlayerFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="visible" />
+            android:layout_height="wrap_content" />
     </FrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

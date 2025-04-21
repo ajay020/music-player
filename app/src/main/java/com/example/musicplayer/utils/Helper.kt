@@ -5,23 +5,30 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.util.Log
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 object Helper {
-    fun getAlbumArt(songUri: Uri, context: Context): Bitmap? {
-        val retriever = MediaMetadataRetriever()
-        try {
-            retriever.setDataSource(context, songUri)
-            val art = retriever.embeddedPicture  // Get the image bytes
-            return art?.let { BitmapFactory.decodeByteArray(it, 0, it.size) }
+    fun getEmbeddedAlbumArt(context: Context, songUri: Uri): Bitmap? {
+        return try {
+            val mmr = MediaMetadataRetriever()
+            try {
+                mmr.setDataSource(context, songUri) // instead of URI version
+            } catch (e: Exception) {
+                Log.e("MMR_ERROR", "setDataSource failed", e)
+            }
+            val artBytes = mmr.embeddedPicture
+            mmr.release()
+            artBytes?.let {
+                BitmapFactory.decodeByteArray(it, 0, it.size)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
-        } finally {
-            retriever.release()
+            null
         }
-        return null
     }
+
 
     fun getAlbumArtUri(albumId: Long): Uri {
         return Uri.parse("content://media/external/audio/albumart/$albumId")

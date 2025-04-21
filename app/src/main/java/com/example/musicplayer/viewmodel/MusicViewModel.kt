@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import com.example.musicplayer.data.SongManager
 import com.example.musicplayer.data.model.Song
@@ -34,7 +35,7 @@ class MusicViewModel @Inject constructor(
     private val type = savedStateHandle.get<String>("TYPE")
 
     private val _currentSong = MutableLiveData<Song?>()
-    val currentSong: LiveData<Song?> = _currentSong
+    val currentSong: LiveData<Song?> = _currentSong.distinctUntilChanged()
 
     private val _songs = MutableLiveData<List<Song>>()
     val songs: LiveData<List<Song>> = _songs
@@ -61,7 +62,7 @@ class MusicViewModel @Inject constructor(
                 _isPlaying.postValue(isPlaying)
                 _currentPosition.postValue(currentPosition.toInt())
                 _duration.postValue(duration.toInt())
-                _currentSong.postValue(song)
+                updateCurrentSong(song)
             }
         }
     }
@@ -86,6 +87,10 @@ class MusicViewModel @Inject constructor(
                 "ARTIST" -> artistId?.let { loadSongsBasedOnType("ARTIST", it) }
                 "ALBUM" -> albumId?.let { loadSongsBasedOnType("ALBUM", it) }
                 "FOLDER" -> folderName?.let { loadSongsBasedOnType("FOLDER", folderName = it) }
+                else -> {
+                    Log.e("MusicViewModel", "Unknown type: $type")
+                    _songs.value = emptyList()
+                }
             }
         }
     }
@@ -106,6 +111,12 @@ class MusicViewModel @Inject constructor(
                 id = playlistId,
                 folderName = folderName
             )
+        }
+    }
+
+    private fun updateCurrentSong(song: Song?) {
+        if (_currentSong.value?.id != song?.id) {
+            _currentSong.postValue(song)
         }
     }
 

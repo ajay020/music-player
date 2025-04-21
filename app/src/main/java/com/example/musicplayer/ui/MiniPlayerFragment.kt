@@ -79,7 +79,7 @@ class MiniPlayerFragment : Fragment(R.layout.fragment_mini_player) {
 
 
 
-        val albumArt = Helper.getAlbumArt(song.uri, requireContext())
+        val albumArt = Helper.getEmbeddedAlbumArt(songUri =  song.uri, context =  requireContext())
         if (albumArt != null) {
             miniAlbumArt.setImageBitmap(albumArt)
         } else {

@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -19,6 +20,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -54,6 +56,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.core.net.toUri
+import com.bumptech.glide.Glide
+import com.example.musicplayer.utils.Helper
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -85,6 +90,7 @@ class MainActivity : AppCompatActivity() {
         searchView = findViewById(R.id.search_view_main)
         toolbar = findViewById(R.id.toolbar_main)
         miniPlayerContainer = findViewById(R.id.mini_player_fragment)
+
 
         setSupportActionBar(toolbar)
         supportActionBar?.title = getString(R.string.app_name)
@@ -269,7 +275,11 @@ class MainActivity : AppCompatActivity() {
             ) {
                 ActivityCompat.requestPermissions(
                     this,
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    arrayOf(
+                        Manifest.permission.POST_NOTIFICATIONS,
+                        Manifest.permission.READ_MEDIA_AUDIO,
+                        Manifest.permission.READ_MEDIA_IMAGES
+                    ),
                     100
                 )
             }

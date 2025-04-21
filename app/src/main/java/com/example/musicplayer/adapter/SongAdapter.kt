@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -17,7 +18,7 @@ class SongAdapter(
     private val songs: List<Song>,
     private val albumCoverUri: String = "",
     private val albumName: String = "",
-    private val onSongClick: (Song, Int) -> Unit ,
+    private val onSongClick: (Song, Int) -> Unit,
     private val onBackButtonClick: () -> Unit = {},
     private val onSearchButtonClick: () -> Unit = {},
     private val onMoreOptionsClick: (Song) -> Unit = {}
@@ -100,8 +101,9 @@ class SongAdapter(
     override fun getItemCount() = songs.size
 
     private fun setImageView(imageView: ImageView, uri: String) {
+        val bitmap = Helper.getEmbeddedAlbumArt(context = imageView.context, songUri = uri.toUri())
         Glide.with(imageView.context)
-            .load(uri)
+            .load(bitmap)
             .placeholder(R.drawable.ic_music_placeholder)
             .error(R.drawable.ic_music_placeholder)
             .into(imageView)

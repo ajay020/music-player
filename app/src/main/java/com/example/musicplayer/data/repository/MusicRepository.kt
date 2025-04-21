@@ -49,7 +49,6 @@ class MusicRepository @Inject constructor(
                     val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
                     val titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
                     val artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
-                    val albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
                     val albumIdColumn =
                         cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
                     val durationColumn =
@@ -60,16 +59,18 @@ class MusicRepository @Inject constructor(
                         val id = cursor.getLong(idColumn)
                         val title = cursor.getString(titleColumn)
                         val artist = cursor.getString(artistColumn)
-                        val albumName = cursor.getString(albumColumn)
                         val albumId = cursor.getLong(albumIdColumn).toString()
                         val duration = cursor.getLong(durationColumn)
                         val path = cursor.getString(pathColumn)
 
-                        val contentUri = Helper.getAlbumArtUri(albumId.toLong())
+                        val contentUri = getAlbumArtUri(albumId.toLong())
+                        val songUri = ContentUris.withAppendedId(
+                            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id
+                        )
 
                         val song = Song(
                             id = id,
-                            uri = contentUri,
+                            uri = songUri,
                             title = title,
                             artist = artist,
                             albumId = albumId,
@@ -83,6 +84,10 @@ class MusicRepository @Inject constructor(
                 tempSongs
             }
         }
+    }
+
+    fun getAlbumArtUri(albumId: Long): Uri {
+        return Uri.parse("content://media/external/audio/albumart/$albumId")
     }
 
     suspend fun getSongs(type: String, id: Long? = null, folderName: String? = null): List<Song> {

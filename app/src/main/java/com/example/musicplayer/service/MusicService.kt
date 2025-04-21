@@ -50,10 +50,22 @@ class MusicService : Service() {
         intent.putExtra("CURRENT_POSITION", player.currentPosition)
         intent.putExtra("DURATION", player.duration)
 
-        Log.d("MusicService", "Broadcasting: isPlaying=${player.isPlaying}, position=${player.currentPosition}, duration=${player.duration}")
-
         sendBroadcast(intent)
     }
+
+//    private fun broadcastPlaybackState() {
+//        val intent = Intent("PLAYER_STATE")
+//        intent.putExtra("IS_PLAYING", player.isPlaying)
+//        intent.putExtra("CURRENT_POSITION", player.currentPosition)
+//        intent.putExtra("DURATION", player.duration)
+//        sendBroadcast(intent)
+//    }
+//
+//    private fun broadcastCurrentSong(song: Song) {
+//        val intent = Intent("SONG_CHANGED")
+//        intent.putExtra("SONG", song)
+//        sendBroadcast(intent)
+//    }
 
 
     override fun onCreate() {
@@ -105,14 +117,14 @@ class MusicService : Service() {
 
             "ACTION_SEEK_TO" -> {
                 val position = intent.getIntExtra("seekTo", 0)
-                Log.d( "MusicService", "Seek to position: $position")
+                Log.d("MusicService", "Seek to position: $position")
                 player.seekTo(position.toLong())
             }
         }
         return START_STICKY
     }
 
-    fun playSong(song: Song) {
+    private fun playSong(song: Song) {
         val mediaItem = MediaItem.fromUri(song.path)
         player.setMediaItem(mediaItem)
         player.prepare()
@@ -189,7 +201,7 @@ class MusicService : Service() {
         )
 
         // Get album art for notification
-        val albumArt = Helper.getAlbumArt(song.uri, this)
+        val albumArt = Helper.getEmbeddedAlbumArt(songUri = song.uri, context = this)
         val bitmap =
             albumArt ?: BitmapFactory.decodeResource(resources, R.drawable.ic_music_placeholder)
 

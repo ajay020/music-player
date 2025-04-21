@@ -1,21 +1,36 @@
 package com.example.musicplayer.ui.player
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.drawable.Drawable
+import android.media.MediaMetadataRetriever
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.example.musicplayer.R
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.musicplayer.utils.Helper
 import com.example.musicplayer.viewmodel.MusicViewModel
 import com.google.android.material.button.MaterialButton
-
+import javax.sql.DataSource
 
 @AndroidEntryPoint
 class FullPlayerActivity : AppCompatActivity() {
@@ -32,6 +47,7 @@ class FullPlayerActivity : AppCompatActivity() {
 
     private val musicViewModel: MusicViewModel by viewModels()
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -53,6 +69,7 @@ class FullPlayerActivity : AppCompatActivity() {
         currentTimeTextView = findViewById(R.id.current_time)
         totalDurationTextView = findViewById(R.id.total_duration)
         btnClose = findViewById(R.id.btnClose)
+
     }
 
     private fun setupListeners() {
@@ -94,8 +111,12 @@ class FullPlayerActivity : AppCompatActivity() {
             song?.let {
                 songTitle.text = song.title
                 artistName.text = song.artist
+
+                Log.d("URI", "Uri: ${song.uri}")
+                val bitmap = Helper.getEmbeddedAlbumArt(this, song.uri)
+
                 Glide.with(this)
-                    .load(song.uri)
+                    .load(bitmap)
                     .placeholder(R.drawable.ic_music_placeholder)
                     .error(R.drawable.ic_music_placeholder)
                     .into(albumArt)
@@ -109,7 +130,6 @@ class FullPlayerActivity : AppCompatActivity() {
         }
 
         musicViewModel.currentPosition.observe(this) { position ->
-            Log.d("SeekBar", "Progress position $position")
             seekBar.progress = position
             updateTimeDisplay(position.toLong(), seekBar.max.toLong()) // Update current time
         }

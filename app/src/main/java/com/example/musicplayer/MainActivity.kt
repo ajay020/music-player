@@ -40,12 +40,18 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.core.graphics.drawable.toDrawable
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.musicplayer.data.model.Sortable
 import com.example.musicplayer.ui.SettingsActivity
+import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.dialog.MaterialDialogs
 import com.google.common.io.Resources
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -57,8 +63,11 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Apply the saved theme before calling super.onCreate()
+
+        installSplashScreen()
         applySavedTheme()
+        DynamicColors.applyToActivityIfAvailable(this)
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -92,6 +101,17 @@ class MainActivity : AppCompatActivity() {
         }.attach()
     }
 
+    private fun applySavedTheme() {
+        val sharedPreferences = getSharedPreferences("app_settings", Context.MODE_PRIVATE)
+        val savedTheme = sharedPreferences.getString("theme", "light") ?: "light"
+
+        when (savedTheme) {
+            "light" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            "dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            "system" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.top_app_bar_menu, menu)
 
@@ -121,16 +141,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun applySavedTheme() {
-        val sharedPreferences = getSharedPreferences("app_settings", Context.MODE_PRIVATE)
-        val savedTheme = sharedPreferences.getString("theme", "light") ?: "light"
-
-        when (savedTheme) {
-            "light" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            "dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            "system" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-        }
-    }
 
     private fun showMoreOptionsDialog() {
         val dialog = Dialog(this, R.style.ThemeOverlay_MusicPlayer_Dialog)

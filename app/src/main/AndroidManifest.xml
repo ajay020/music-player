@@ -19,6 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MusicPlayer"
         tools:targetApi="31">
+
         <activity
             android:name=".ui.SettingsActivity"
             android:exported="false" />
@@ -35,15 +36,26 @@
         <activity
             android:name=".ui.player.FullPlayerActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.SplashActivity"
+            android:exported="true"
+            android:noHistory="true"
+            android:theme="@style/Theme.MusicPlayer.SplashActivity">
+
+        </activity>
+
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.MusicPlayer.Splash">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

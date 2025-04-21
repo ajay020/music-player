@@ -1,27 +1,21 @@
 package com.example.musicplayer.ui.player
 
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.musicplayer.R
 import dagger.hilt.android.AndroidEntryPoint
-import com.example.musicplayer.data.model.Song
 import com.example.musicplayer.utils.Helper
 import com.example.musicplayer.viewmodel.MusicViewModel
-import com.example.musicplayer.viewmodel.PlayerViewModel
 import com.google.android.material.button.MaterialButton
-import java.util.Locale
 
-private const val TAG = "PlayerActivity"
 
 @AndroidEntryPoint
 class FullPlayerActivity : AppCompatActivity() {
@@ -40,6 +34,7 @@ class FullPlayerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_full_player)
 
         initViews()
@@ -120,7 +115,6 @@ class FullPlayerActivity : AppCompatActivity() {
         }
 
         musicViewModel.duration.observe(this) { duration ->
-            Log.d("SeekBar", "Progress duration $duration")
             seekBar.max = duration
             updateTimeDisplay(
                 seekBar.progress.toLong(),

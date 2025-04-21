@@ -10,9 +10,9 @@
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.Toolbar"
-        android:background="?attr/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -31,9 +31,8 @@
             android:minHeight="48dp"
             android:scaleX="2"
             android:scaleY="2"
-            android:textColor="?attr/colorOnPrimary"
             app:icon="@drawable/ic_arrow_down"
-            app:iconTint="?attr/colorOnPrimary" />
+            app:iconTint="@color/md_theme_onBackground" />
 
     </com.google.android.material.appbar.MaterialToolbar>
 
@@ -55,8 +54,10 @@
             android:id="@+id/full_album_art"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:contentDescription="@string/track_cover"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_music_placeholder" />
+            android:src="@drawable/ic_music_placeholder"
+            app:tint="@color/md_theme_onSurface" />
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -134,12 +135,8 @@
 
         <ImageButton
             android:id="@+id/btn_prev"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="12dp"
-            android:src="@drawable/ic_prev"
-            app:tint="?attr/colorControlNormal" />
+            style="@style/PlayerControlButton"
+            android:src="@drawable/ic_prev" />
 
         <ImageButton
             android:id="@+id/btn_play_pause"
@@ -148,19 +145,15 @@
             android:layout_marginHorizontal="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:scaleX="1.2"
-            android:scaleY="1.2"
+            android:scaleX="1.8"
+            android:scaleY="1.8"
             android:src="@drawable/ic_play"
             app:tint="?attr/colorControlNormal" />
 
         <ImageButton
             android:id="@+id/btn_next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="12dp"
-            android:src="@drawable/ic_next"
-            app:tint="?attr/colorControlNormal" />
+            style="@style/PlayerControlButton"
+            android:src="@drawable/ic_next" />
 
     </LinearLayout>
 

@@ -4,6 +4,7 @@
     android:id="@+id/mini_player"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/md_theme_secondary"
     android:padding="8dp">
 
     <ImageView
@@ -14,7 +15,8 @@
         android:src="@drawable/ic_music_placeholder"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/md_theme_onSecondary" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -32,6 +34,8 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
+            android:text="title"
+            android:textColor="@color/md_theme_onSecondary"
             android:textStyle="bold" />
 
         <TextView
@@ -39,7 +43,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:text="artist"
+            android:textColor="@color/md_theme_onSecondary" />
     </LinearLayout>
 
     <ImageButton
@@ -47,29 +53,38 @@
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:background="?attr/selectableItemBackgroundBorderless"
+        android:scaleX="1.4"
+        android:scaleY="1.4"
         android:src="@drawable/ic_prev"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/mini_btn_play_pause"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/md_theme_onSecondary" />
 
     <ImageButton
         android:id="@+id/mini_btn_play_pause"
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:background="?attr/selectableItemBackgroundBorderless"
+        android:scaleX="1.8"
+        android:scaleY="1.8"
         android:src="@drawable/ic_play"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/mini_btn_next"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/md_theme_onSecondary" />
 
-    <ImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/mini_btn_next"
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:background="?attr/selectableItemBackgroundBorderless"
+        android:scaleX="1.4"
+        android:scaleY="1.4"
         android:src="@drawable/ic_next"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/md_theme_onSecondary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

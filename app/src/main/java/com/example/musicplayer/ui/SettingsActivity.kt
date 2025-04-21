@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.musicplayer.BuildConfig
 import com.example.musicplayer.R
@@ -15,7 +16,9 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_settings)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // Add back button to toolbar
         supportActionBar?.title = "Settings"
 

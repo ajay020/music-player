@@ -18,6 +18,7 @@ import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import com.bumptech.glide.Glide
 import com.example.musicplayer.R
 import com.example.musicplayer.data.model.Song
 import com.example.musicplayer.ui.player.FullPlayerActivity
@@ -78,13 +79,20 @@ class MiniPlayerFragment : Fragment(R.layout.fragment_mini_player) {
         miniArtistName.text = song.artist
 
 
+        val albumArt = Helper.getEmbeddedAlbumArt(songUri = song.uri, context = requireContext())
 
-        val albumArt = Helper.getEmbeddedAlbumArt(songUri =  song.uri, context =  requireContext())
-        if (albumArt != null) {
-            miniAlbumArt.setImageBitmap(albumArt)
-        } else {
-            miniAlbumArt.setImageResource(R.drawable.ic_music_placeholder)
-        }
+        Glide.with(requireContext())
+            .load(albumArt)
+            .placeholder(R.drawable.ic_music_placeholder)
+            .error(R.drawable.ic_music_placeholder)
+            .circleCrop()
+            .into(miniAlbumArt)
+
+//        if (albumArt != null) {
+//            miniAlbumArt.setImageBitmap(albumArt)
+//        } else {
+//            miniAlbumArt.setImageResource(R.drawable.ic_music_placeholder)
+//        }
     }
 
     private fun updatePlayPauseButton(isPlaying: Boolean) {

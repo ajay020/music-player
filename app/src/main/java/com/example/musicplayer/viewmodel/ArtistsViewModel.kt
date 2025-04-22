@@ -22,7 +22,7 @@ class ArtistsViewModel @Inject constructor(
         loadArtists()
     }
 
-    private fun loadArtists() {
+    fun loadArtists() {
         viewModelScope.launch(Dispatchers.IO) {
             val artistList = artistsRepository.queryArtists()
             _artists.postValue(artistList)

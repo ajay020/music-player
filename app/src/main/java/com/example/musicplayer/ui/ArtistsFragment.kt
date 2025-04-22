@@ -58,6 +58,7 @@ class ArtistsFragment : Fragment(), Searchable, Sortable {
         recyclerView.adapter = artistAdapter
 
         artistsViewModel.artists.observe(viewLifecycleOwner) { artists ->
+            Log.d("ArtistsFragment", "Artists: ${artists.size}")
             artistsList.clear()
             artistsList.addAll(artists)
             originalArtistList = artists
@@ -65,6 +66,23 @@ class ArtistsFragment : Fragment(), Searchable, Sortable {
         }
 
         return view
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    override fun onResume() {
+        super.onResume()
+
+        val permission = Manifest.permission.READ_MEDIA_AUDIO
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+            ) {
+            // Load songs only if list is empty (to avoid duplicate loading)
+            if (artistsList.isEmpty()) {
+                artistsViewModel.loadArtists()
+            }
+        }
     }
 
     override fun onSearchQuery(query: String?) {

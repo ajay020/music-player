@@ -24,6 +24,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -71,6 +72,17 @@ class MainActivity : AppCompatActivity() {
 
     private val musicViewModel: MusicViewModel by viewModels()
 
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            Log.e("main_activity", "Notification Permission Granted")
+        } else {
+            Log.e("main_activity", "Permission Denied")
+        }
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -83,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // Request necessary permissions
-        requestNeededPermissions()
+        requestNotificationsPermission()
 
         tabLayout = findViewById(R.id.tab_layout)
         viewPager = findViewById(R.id.viewPager)
@@ -165,7 +177,6 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
 
     private fun showMoreOptionsDialog() {
         val dialog = Dialog(this, R.style.ThemeOverlay_MusicPlayer_Dialog)
@@ -266,23 +277,8 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun requestNeededPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(
-                        Manifest.permission.POST_NOTIFICATIONS,
-                        Manifest.permission.READ_MEDIA_AUDIO,
-                        Manifest.permission.READ_MEDIA_IMAGES
-                    ),
-                    100
-                )
-            }
-        }
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun requestNotificationsPermission() {
+        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 }

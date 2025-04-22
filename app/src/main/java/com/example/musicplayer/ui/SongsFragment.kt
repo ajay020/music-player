@@ -1,9 +1,12 @@
 package com.example.musicplayer.ui
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +32,7 @@ import com.example.musicplayer.viewmodel.MusicViewModel
 import com.example.musicplayer.viewmodel.PlaylistViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.core.net.toUri
 
 @AndroidEntryPoint
 class SongsFragment : Fragment(), Searchable, Sortable {
@@ -36,7 +40,7 @@ class SongsFragment : Fragment(), Searchable, Sortable {
     private val playlistViewModel: PlaylistViewModel by viewModels()
 
     private lateinit var recyclerView: RecyclerView
-    private var originalSongsList: List<Song> = emptyList() // Store the original list
+    private var originalSongsList: List<Song> = emptyList()
     private var songsList = mutableListOf<Song>()
     private var userPlaylists = listOf<Playlist>()
 
@@ -53,11 +57,22 @@ class SongsFragment : Fragment(), Searchable, Sortable {
             if (isGranted) {
                 musicViewModel.loadSongsBasedOnType("SONGS")
             } else {
-                Log.e("song fragment", "Permission Denied")
+                val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    Manifest.permission.READ_MEDIA_AUDIO
+                } else {
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                }
+
+                if (!shouldShowRequestPermissionRationale(permission)) {
+                    // User clicked "Don't ask again"
+                    showGoToSettingsDialog()
+                } else {
+                    Log.e("song fragment", "Permission Denied")
+                }
             }
         }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -67,7 +82,6 @@ class SongsFragment : Fragment(), Searchable, Sortable {
         return view
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -80,7 +94,25 @@ class SongsFragment : Fragment(), Searchable, Sortable {
         requestAudioPermission()
         observeUserPlaylists()
         observeSongs()
+
     }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    override fun onResume() {
+        super.onResume()
+        val permission = Manifest.permission.READ_MEDIA_AUDIO
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Load songs only if list is empty (to avoid duplicate loading)
+            if (songsList.isEmpty()) {
+                musicViewModel.loadSongsBasedOnType("SONGS")
+            }
+        }
+    }
+
 
     override fun onSearchQuery(query: String?) {
         query?.let {
@@ -166,7 +198,6 @@ class SongsFragment : Fragment(), Searchable, Sortable {
     }
 
     private fun observeUserPlaylists() {
-        // Observe user playlists
         playlistViewModel.allPlaylists.observe(viewLifecycleOwner) { playlists ->
             userPlaylists = playlists.filter { !it.isDefault }
         }
@@ -183,17 +214,56 @@ class SongsFragment : Fragment(), Searchable, Sortable {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun requestAudioPermission() {
-        // Request READ_MEDIA_AUDIO permission
-        if (ContextCompat.checkSelfPermission(
+        val permission =
+            Manifest.permission.READ_MEDIA_AUDIO
+
+        when {
+            ContextCompat.checkSelfPermission(
                 requireContext(),
-                Manifest.permission.READ_MEDIA_AUDIO
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_AUDIO)
-        } else {
-            musicViewModel.loadSongsBasedOnType("SONGS")
+                permission
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                // Already granted
+                musicViewModel.loadSongsBasedOnType("SONGS")
+            }
+
+            shouldShowRequestPermissionRationale(permission) -> {
+                // User previously denied but didn't select "Don't ask again"
+                showPermissionRationaleDialog()
+            }
+
+            else -> {
+                //  First time or "Don't ask again" selected — try requesting anyway
+                requestPermissionLauncher.launch(permission)
+            }
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun showPermissionRationaleDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Permission Needed")
+            .setMessage("This app needs access to your audio files to show your songs.")
+            .setPositiveButton("Allow") { _, _ ->
+                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_AUDIO)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showGoToSettingsDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Permission Required")
+            .setMessage("Please enable Media permission from Settings to load your songs.")
+            .setPositiveButton("Open Settings") { _, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = "package:${requireContext().packageName}".toUri()
+                }
+                startActivity(intent)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
 
     private fun playSong(song: Song, index: Int) {
         musicViewModel.playSong(song, index)

@@ -36,6 +36,8 @@ class SongsDisplayActivity : AppCompatActivity() {
     private lateinit var searchView: SearchView
     private lateinit var miniPlayerContainer: FrameLayout
 
+    private var currentPlayingIndex = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -67,10 +69,23 @@ class SongsDisplayActivity : AppCompatActivity() {
 
     private fun observeCurrentSong() {
         musicViewModel.currentSong.observe(this) { selectedSong ->
+            val newIndex = songsList.indexOfFirst { it.id == selectedSong?.id }
+            val oldIndex = currentPlayingIndex
+
             if (selectedSong != null) {
                 miniPlayerContainer.visibility = View.VISIBLE
             } else {
                 miniPlayerContainer.visibility = View.GONE
+            }
+
+            if (newIndex != -1) {
+                currentPlayingIndex = newIndex
+                songAdapter.currentPlayingIndex = newIndex
+
+                if (oldIndex != -1 && oldIndex != newIndex) {
+                    songAdapter.notifyItemChanged(oldIndex)
+                }
+                songAdapter.notifyItemChanged(newIndex)
             }
         }
     }
@@ -79,11 +94,13 @@ class SongsDisplayActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.songs_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
         songAdapter = SongAdapter(
-            songsList,
+            songs = songsList,
+            onMoreOptionsClick = { song ->
+                Log.d("SongsDisplayActivity", "More options clicked for song: ${song.title}")
+            },
             onSongClick = { song, index ->
                 playSong(song, index)
             },
-            onBackButtonClick = { finish() },
         )
         recyclerView.adapter = songAdapter
     }
@@ -154,7 +171,7 @@ class SongsDisplayActivity : AppCompatActivity() {
     private fun loadPlaylistImage(playlistId: Long) {
         // Implement logic to fetch playlist image URI based on playlistId
         // This might involve querying your local database or using a default image
-        val imageUri = getPlaylistImageUri(playlistId) // Replace with your actual method
+        val imageUri = getPlaylistImageUri(playlistId)
         if (imageUri != null) {
             showToolbarImage(imageUri)
         }

@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp"
-    >
+    android:padding="8dp">
 
     <FrameLayout
         android:id="@+id/frameLayout"
@@ -72,10 +71,10 @@
         android:focusable="true"
         android:padding="8dp"
         android:src="@drawable/ic_more"
-        app:tint="?attr/colorOnSurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/colorOnSurface"
         tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

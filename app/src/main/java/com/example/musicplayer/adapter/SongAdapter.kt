@@ -1,11 +1,12 @@
 package com.example.musicplayer.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -16,65 +17,25 @@ import com.example.musicplayer.utils.Helper
 
 class SongAdapter(
     private val songs: List<Song>,
-    private val albumCoverUri: String = "",
-    private val albumName: String = "",
     private val onSongClick: (Song, Int) -> Unit,
-    private val onBackButtonClick: () -> Unit = {},
-    private val onSearchButtonClick: () -> Unit = {},
-    private val onMoreOptionsClick: (Song) -> Unit = {}
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val onMoreOptionsClick: (Song) -> Unit = {},
+) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
-    companion object {
-        private const val VIEW_TYPE_HEADER = 0
-        private const val VIEW_TYPE_SONG = 1
+    var currentPlayingIndex: Int = -1
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_song, parent, false)
+        SongViewHolder(view)
+        return SongViewHolder(view)
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return if (position == 0 && albumCoverUri != "") VIEW_TYPE_HEADER else VIEW_TYPE_SONG
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return if (viewType == VIEW_TYPE_HEADER) {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_album_header, parent, false)
-            AlbumHeaderViewHolder(view)
-        } else {
-            val view =
-                LayoutInflater.from(parent.context).inflate(R.layout.item_song, parent, false)
-            SongViewHolder(view)
-        }
-    }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val song = songs[position]
 
-        if (holder is AlbumHeaderViewHolder) {
-            holder.bind(albumCoverUri)
+        val isPlaying = currentPlayingIndex == position
 
-        } else if (holder is SongViewHolder) {
-            holder.bind(song, position, onSongClick)
-        }
-    }
-
-    // ViewHolder for Album Cover & Title
-    inner class AlbumHeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val albumCover: ImageView = itemView.findViewById(R.id.album_cover)
-        private val albumTitle: TextView = itemView.findViewById(R.id.tv_album_title)
-        private val backButton: ImageButton = itemView.findViewById(R.id.back_button)
-        private val searchButton: ImageButton = itemView.findViewById(R.id.btn_search)
-
-        fun bind(albumCoverUri: String) {
-            setImageView(albumCover, albumCoverUri)
-            albumTitle.text = albumName
-
-            backButton.setOnClickListener {
-                onBackButtonClick() // Call the callback
-            }
-
-            searchButton.setOnClickListener {
-                onSearchButtonClick() // Call the search callback
-            }
-        }
+        holder.bind(song, position, onSongClick, onMoreOptionsClick, isPlaying)
     }
 
     // ViewHolder for Song Item
@@ -85,12 +46,60 @@ class SongAdapter(
         val albumArtImageView: ImageView = itemView.findViewById(R.id.song_art)
         val moreOptionsImageView: ImageView = itemView.findViewById(R.id.more_options)
 
-        fun bind(song: Song, index: Int, onClick: (Song, Int) -> Unit) {
+        fun bind(
+            song: Song,
+            index: Int,
+            onClick: (Song, Int) -> Unit,
+            onMoreOptionsClick: (Song) -> Unit,
+            isPlaying: Boolean
+        ) {
             titleTextView.text = song.title
             itemView.setOnClickListener { onClick(song, index) }
             artistTextView.text = song.artist
             durationTextView.text = Helper.formatTime(song.duration)
             setImageView(albumArtImageView, song.uri.toString())
+
+            // Highlight logic here
+            if (isPlaying) {
+                titleTextView.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.highlight
+                    )
+                )
+                artistTextView.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.highlight
+                    )
+                )
+
+                durationTextView.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.highlight
+                    )
+                )
+            } else {
+                titleTextView.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.md_theme_onBackground
+                    )
+                )
+                artistTextView.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.md_theme_onBackground
+                    )
+                )
+                durationTextView.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.md_theme_onBackground
+                    )
+                )
+            }
 
             moreOptionsImageView.setOnClickListener {
                 onMoreOptionsClick(song) // Call the new callback

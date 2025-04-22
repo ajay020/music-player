@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="highlight">#4FCC0E</color>
+
+
     <color name="md_theme_primary">#4C662B</color>
     <color name="md_theme_onPrimary">#FFFFFF</color>
     <color name="md_theme_primaryContainer">#CDEDA3</color>

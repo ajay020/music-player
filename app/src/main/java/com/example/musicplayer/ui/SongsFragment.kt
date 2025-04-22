@@ -3,7 +3,6 @@ package com.example.musicplayer.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -14,14 +13,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.musicplayer.MainActivity
 import com.example.musicplayer.R
 import com.example.musicplayer.adapter.SongAdapter
 import com.example.musicplayer.data.model.Playlist
@@ -44,12 +41,12 @@ class SongsFragment : Fragment(), Searchable, Sortable {
     private var songsList = mutableListOf<Song>()
     private var userPlaylists = listOf<Playlist>()
 
+    private var currentPlayingIndex = -1
+
     private var songAdapter: SongAdapter? = SongAdapter(
         songs = songsList,
         onSongClick = { song, index -> playSong(song, index) },
-        onBackButtonClick = { (context as? MainActivity)?.finish() },
-        onSearchButtonClick = { Log.d("SongsFragment", "Search button in header clicked") },
-        onMoreOptionsClick = { showSongOptionsDialog(it) }
+        onMoreOptionsClick = { showSongOptionsDialog(it) },
     )
 
     private val requestPermissionLauncher =
@@ -72,7 +69,6 @@ class SongsFragment : Fragment(), Searchable, Sortable {
             }
         }
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -82,19 +78,19 @@ class SongsFragment : Fragment(), Searchable, Sortable {
         return view
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView = view.findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(context)
-
         recyclerView.adapter = songAdapter
 
         // Observe data and set up listeners here
         requestAudioPermission()
         observeUserPlaylists()
         observeSongs()
-
+        observeCurrentSong()
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -112,7 +108,6 @@ class SongsFragment : Fragment(), Searchable, Sortable {
             }
         }
     }
-
 
     override fun onSearchQuery(query: String?) {
         query?.let {
@@ -212,6 +207,25 @@ class SongsFragment : Fragment(), Searchable, Sortable {
         }
     }
 
+    private fun observeCurrentSong() {
+        musicViewModel.currentSong.observe(viewLifecycleOwner) { selectedSong ->
+
+            val newIndex = songsList.indexOfFirst { it.id == selectedSong?.id }
+
+            if (newIndex != -1) {
+                val oldIndex = currentPlayingIndex
+                currentPlayingIndex = newIndex
+
+                songAdapter?.currentPlayingIndex = newIndex
+
+                if (oldIndex != -1 && oldIndex != newIndex) {
+                    songAdapter?.notifyItemChanged(oldIndex)
+                }
+                songAdapter?.notifyItemChanged(newIndex)
+            }
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun requestAudioPermission() {
         val permission =
@@ -263,7 +277,6 @@ class SongsFragment : Fragment(), Searchable, Sortable {
             .setNegativeButton("Cancel", null)
             .show()
     }
-
 
     private fun playSong(song: Song, index: Int) {
         musicViewModel.playSong(song, index)

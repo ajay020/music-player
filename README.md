@@ -1,6 +1,7 @@
 # 🎵 Music Player App
 
-A beautifully designed Android music player built with Kotlin, MVVM architecture. This app lets users browse, search, and play local song.
+A beautifully designed Android music player built with Kotlin, MVVM architecture. This app lets
+users browse, search, and play local song.
 
 ## ✨ Features
 
@@ -12,11 +13,57 @@ A beautifully designed Android music player built with Kotlin, MVVM architecture
 
 ## 📱 Screenshots
 
-| Song List | Now Playing | Mini Player |
-|----------|-------------|-------------|
-| ![song list](screenshots/song_list.png) | ![now playing](screenshots/now_playing.png) | ![mini player](screenshots/mini_player.png) |
+<h2>📱 Screenshots</h2>
 
-> 📷 Make sure to put your actual screenshot images in a `screenshots/` folder in your project root and update the file names accordingly.
+<div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+
+  <div style="flex: 1; min-width: 30%;">
+    <img src="screenshots/song_list_screen.png.png" alt="Song List" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
+    <p align="center">Song List</p>
+  </div>
+
+  <div style="flex: 1; min-width: 30%;">
+    <img src="screenshots/highlight_song_screen.png.png" alt="Now Playing" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
+    <p align="center">Now Playing</p>
+  </div>
+
+  <div style="flex: 1; min-width: 30%;">
+    <img src="screenshots/dark_songslist_screen.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
+    <p align="center">Mini Player</p>
+  </div>
+
+  <div style="flex: 1; min-width: 30%;">
+    <img src="screenshots/full_player_screen.png.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
+    <p align="center">Mini Player</p>
+  </div>
+
+ <div style="flex: 1; min-width: 30%;">
+    <img src="screenshots/playlist.png.png.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
+    <p align="center">Mini Player</p>
+  </div>
+
+ <div style="flex: 1; min-width: 30%;">
+    <img src="screenshots/song_action_dialog.png.png.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
+    <p align="center">Mini Player</p>
+  </div>
+
+ <div style="flex: 1; min-width: 30%;">
+    <img src="screenshots/settings_screen.png.png.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
+    <p align="center">Mini Player</p>
+  </div>
+
+ <div style="flex: 1; min-width: 30%;">
+    <img src="screenshots/theme_dialog.png.png.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
+    <p align="center">Mini Player</p>
+  </div>
+
+</div>
+
+
+
+
+> 📷 Make sure to put your actual screenshot images in a `screenshots/` folder in your project root
+> and update the file names accordingly.
 
 ## 🛠️ Tech Stack
 

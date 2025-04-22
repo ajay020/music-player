@@ -24,8 +24,6 @@ users browse, search, and play local song.
   <img src="screenshots/theme_dialog.png" style="width: 200px; margin: 12px;" />
 </div>
 
-
-
 ## 🛠️ Tech Stack
 
 - Kotlin

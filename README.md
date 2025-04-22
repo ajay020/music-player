@@ -13,48 +13,38 @@ users browse, search, and play local song.
 
 ## 📱 Screenshots
 
-<h2>📱 Screenshots</h2>
-
 <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
 
   <div style="flex: 1; min-width: 30%;">
-    <img src="screenshots/song_list_screen.png.png" alt="Song List" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
-    <p align="center">Song List</p>
+    <img src="screenshots/song_list_screen.png" alt="Song List" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
   </div>
 
   <div style="flex: 1; min-width: 30%;">
-    <img src="screenshots/highlight_song_screen.png.png" alt="Now Playing" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
-    <p align="center">Now Playing</p>
+    <img src="screenshots/highlight_song_screen.png" alt="Now Playing" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
   </div>
 
   <div style="flex: 1; min-width: 30%;">
-    <img src="screenshots/dark_songslist_screen.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
-    <p align="center">Mini Player</p>
+    <img src="screenshots/dark_songslist_screen.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
   </div>
 
   <div style="flex: 1; min-width: 30%;">
-    <img src="screenshots/full_player_screen.png.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
-    <p align="center">Mini Player</p>
+    <img src="screenshots/full_player_screen.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
   </div>
 
  <div style="flex: 1; min-width: 30%;">
-    <img src="screenshots/playlist.png.png.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
-    <p align="center">Mini Player</p>
+    <img src="screenshots/playlist.png.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
   </div>
 
  <div style="flex: 1; min-width: 30%;">
-    <img src="screenshots/song_action_dialog.png.png.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
-    <p align="center">Mini Player</p>
+    <img src="screenshots/song_action_dialog.png.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
   </div>
 
  <div style="flex: 1; min-width: 30%;">
-    <img src="screenshots/settings_screen.png.png.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
-    <p align="center">Mini Player</p>
+    <img src="screenshots/settings_screen.png.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
   </div>
 
  <div style="flex: 1; min-width: 30%;">
-    <img src="screenshots/theme_dialog.png.png.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
-    <p align="center">Mini Player</p>
+    <img src="screenshots/theme_dialog.png.png.png" alt="Mini Player" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;" />
   </div>
 
 </div>

@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
-    id ("kotlin-parcelize")
+    id("kotlin-parcelize")
     id("com.google.devtools.ksp")
 }
 
@@ -35,14 +35,10 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 
+    kotlin {
+        jvmToolchain(11)
+    }
 }
 
 dependencies {
@@ -63,14 +59,15 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.6.0")
     implementation("androidx.media3:media3-ui:1.6.0") // UI controls (optional)
 
-    implementation ("com.github.bumptech.glide:glide:4.16.0")
-    kapt ("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.androidx.junit.ktx)
+    kapt("com.github.bumptech.glide:compiler:4.16.0")
 
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
     // For ViewModel injection
-    implementation ("androidx.hilt:hilt-navigation-fragment:1.2.0")
+    implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
 
     // Room Persistence Library
     implementation(libs.androidx.room.runtime)
@@ -81,6 +78,15 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.room.testing)
+    testImplementation(kotlin("test"))
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    testImplementation ("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("org.robolectric:robolectric:4.14.1")
+
+
+    // For mocking
+    testImplementation("org.mockito:mockito-core:5.12.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
 }
 
 // Allow references to generated code

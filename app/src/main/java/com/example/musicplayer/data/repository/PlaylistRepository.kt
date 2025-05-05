@@ -28,6 +28,7 @@ class PlaylistRepository @Inject constructor(
     // Function to add a song ID to a playlist
     suspend fun addSongIdToPlaylist(playlistId: Long, songId: Long) {
         val playlist = getPlaylistById(playlistId)
+
         playlist?.let {
             val updatedSongIds = it.songIds.toMutableSet()
             updatedSongIds.add(songId)
@@ -40,6 +41,7 @@ class PlaylistRepository @Inject constructor(
     // Function to remove a song ID from a playlist
     suspend fun removeSongIdFromPlaylist(playlistId: Long, songId: Long) {
         val playlist = getPlaylistById(playlistId)
+
         playlist?.let {
             val updatedSongIds = it.songIds.toMutableSet()
             updatedSongIds.remove(songId)

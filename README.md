@@ -29,7 +29,7 @@ users browse, search, and play local song.
 - Kotlin
 - MVVM Architecture
 - Jetpack ViewModel + LiveData
-- RecyclerView
+- Room database
 - MediaPlayer API
 - Hilt for Dependency Injection
 
